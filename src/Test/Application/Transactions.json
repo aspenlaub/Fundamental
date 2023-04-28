@@ -1,0 +1,106 @@
+﻿[
+  {
+    "Date": "1997-07-24T00:00:00",
+    "Security": {
+      "SecurityId": "113973",
+      "SecurityName": "3,00-7,00% BSB A 97/3 SL1/1",
+      "QuotedPer": 100
+    },
+    "TransactionType": 1,
+    "Nominal": 2070,
+    "PriceInEuro": 100,
+    "ExpensesInEuro": 4.27,
+    "IncomeInEuro": 0
+  },
+  {
+    "Date": "1997-07-24T00:00:00",
+    "Security": {
+      "SecurityId": "593703",
+      "SecurityName": "MAN VZ",
+      "QuotedPer": 1
+    },
+    "TransactionType": 1,
+    "Nominal": 10,
+    "PriceInEuro": 204.7,
+    "ExpensesInEuro": 42.7,
+    "IncomeInEuro": 0
+  },
+  {
+    "Date": "1997-09-01T00:00:00",
+    "Security": {
+      "SecurityId": "593703",
+      "SecurityName": "MAN VZ",
+      "QuotedPer": 1
+    },
+    "TransactionType": 2,
+    "Nominal": 3,
+    "PriceInEuro": 209.24,
+    "ExpensesInEuro": 24.7,
+    "IncomeInEuro": 0
+  },
+  {
+    "Date": "1997-12-31T00:00:00",
+    "Security": {
+      "SecurityId": "113973",
+      "SecurityName": "3,00-7,00% BSB A 97/3 SL1/1",
+      "QuotedPer": 100
+    },
+    "TransactionType": 3,
+    "Nominal": 0,
+    "PriceInEuro": 0,
+    "ExpensesInEuro": 0,
+    "IncomeInEuro": 240.7
+  },
+  {
+    "Date": "1997-12-31T00:00:00",
+    "Security": {
+      "SecurityId": "593703",
+      "SecurityName": "MAN VZ",
+      "QuotedPer": 1
+    },
+    "TransactionType": 4,
+    "Nominal": 0,
+    "PriceInEuro": 0,
+    "ExpensesInEuro": 0,
+    "IncomeInEuro": 420.7
+  },
+  {
+    "Date": "1998-01-24T00:00:00",
+    "Security": {
+      "SecurityId": "113973",
+      "SecurityName": "3,00-7,00% BSB A 97/3 SL1/1",
+      "QuotedPer": 100
+    },
+    "TransactionType": 2,
+    "Nominal": 2070,
+    "PriceInEuro": 100,
+    "ExpensesInEuro": 7.44,
+    "IncomeInEuro": 0
+  },
+  {
+    "Date": "1998-02-07T00:00:00",
+    "Security": {
+      "SecurityId": "593703",
+      "SecurityName": "MAN VZ",
+      "QuotedPer": 1
+    },
+    "TransactionType": 2,
+    "Nominal": 7,
+    "PriceInEuro": 214.7,
+    "ExpensesInEuro": 0,
+    "IncomeInEuro": 0
+  },
+  {
+    "Date": "1998-02-07T00:00:00",
+    "Security": {
+      "SecurityId": "593703",
+      "SecurityName": "MAN VZ",
+      "QuotedPer": 1
+    },
+    "TransactionType": 1,
+    "Nominal": 70,
+    "PriceInEuro": 21.47,
+    "ExpensesInEuro": 0,
+    "IncomeInEuro": 0
+  }
+]

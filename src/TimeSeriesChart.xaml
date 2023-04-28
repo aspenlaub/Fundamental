@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Aspenlaub.Net.GitHub.CSharp.Fundamental.TimeSeriesChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <!-- ReSharper disable once UnusedMember.Global -->
+    <Grid x:Name="Grid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="TitleBlock" Grid.Column="0" Grid.Row="0" FontSize="16" FontWeight="Bold" Foreground="#FF700070"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0">
+            <Button x:Name="ZoomOut" Click="OnZoomOutClickAsync" Background="Transparent" BorderThickness="0">
+                <Image Source="./Resources/zoomout_20.png" />
+            </Button>
+            <Button x:Name="ZoomIn" Click="OnZoomInClickAsync" Background="Transparent" BorderThickness="0">
+                <Image Source="./Resources/zoomin_20.png" VerticalAlignment="Top" />
+            </Button>
+            <Button x:Name="ScrollLeft" Click="OnScrollLeftClickAsync" Background="Transparent" BorderThickness="0">
+                <Image Source="./Resources/goprevious_20.png" VerticalAlignment="Top" />
+            </Button>
+            <Button x:Name="ScrollRight" Click="OnScrollRightClickAsync" Background="Transparent" BorderThickness="0">
+                <Image Source="./Resources/gonext_20.png" VerticalAlignment="Top" />
+            </Button>
+        </StackPanel>
+        <Canvas x:Name="Canvas" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
+    </Grid>
+</UserControl>

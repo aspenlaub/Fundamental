@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HoldingsPerSecurityChartTitle" xml:space="preserve">
+    <value>Quote value development for security {0} ({1})</value>
+  </data>
+  <data name="RelativeSummaryChartTitle" xml:space="preserve">
+    <value>Relative summary</value>
+  </data>
+  <data name="SummaryChartTitle" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="CouldNotSplit" xml:space="preserve">
+    <value>Could not split: {0}</value>
+  </data>
+  <data name="InvalidDate" xml:space="preserve">
+    <value>Could not read date: {0}</value>
+  </data>
+  <data name="InvalidPrice" xml:space="preserve">
+    <value>Could not read price: {0}</value>
+  </data>
+  <data name="UnknownSecurity" xml:space="preserve">
+    <value>Could not find security: {0}</value>
+  </data>
+  <data name="ChangesUndone" xml:space="preserve">
+    <value>Changes undone</value>
+  </data>
+  <data name="DataSaved" xml:space="preserve">
+    <value>Data saved</value>
+  </data>
+  <data name="FileImported" xml:space="preserve">
+    <value>File imported, see log</value>
+  </data>
+  <data name="ImportCommandName" xml:space="preserve">
+    <value>Import File</value>
+  </data>
+  <data name="RefreshChartCommandName" xml:space="preserve">
+    <value>Refresh Chart</value>
+  </data>
+  <data name="RefreshContextCommandName" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SaveCommandName" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="UndoCommandName" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="FileImportedAndMoved" xml:space="preserve">
+    <value>File '{0}' imported ({1} record(s), {2} added, {3} updated) and moved to the folder 'Done'</value>
+  </data>
+  <data name="FoundNewFile" xml:space="preserve">
+    <value>Found new import file '{0}'</value>
+  </data>
+  <data name="ImportingFile" xml:space="preserve">
+    <value>Importing '{0}'</value>
+  </data>
+  <data name="NewFileSpreadThenDeleted" xml:space="preserve">
+    <value>File '{0}' distributed to environments and deleted</value>
+  </data>
+  <data name="CouldNotReadNominalOrPriceFor" xml:space="preserve">
+    <value>Could not read nominal or quote for security {0}</value>
+  </data>
+  <data name="DateTagNotFound" xml:space="preserve">
+    <value>Date tag {0} not found</value>
+  </data>
+  <data name="FileTooSmall" xml:space="preserve">
+    <value>File is too small</value>
+  </data>
+  <data name="KeyWordNotFound" xml:space="preserve">
+    <value>Key word {0} not found</value>
+  </data>
+  <data name="NotEnoughData" xml:space="preserve">
+    <value>Not enough data: {0}</value>
+  </data>
+  <data name="SecurityIsQuotedIn" xml:space="preserve">
+    <value>Security {0} is quoted in {1}</value>
+  </data>
+  <data name="EmptySecurity" xml:space="preserve">
+    <value>Security is empty</value>
+  </data>
+  <data name="ImportResult" xml:space="preserve">
+    <value>{0} quotes imported, {1} warning(s)/error(s)</value>
+  </data>
+  <data name="BankStatement_BankAccount" xml:space="preserve">
+    <value>Depotkonto</value>
+  </data>
+  <data name="BankStatement_Currency" xml:space="preserve">
+    <value>Währung</value>
+  </data>
+  <data name="BankStatement_CurrentValueInEuro" xml:space="preserve">
+    <value>Marktwert in EUR inkl. Stückzinsen</value>
+  </data>
+  <data name="BankStatement_Nominal" xml:space="preserve">
+    <value>Bestand</value>
+  </data>
+  <data name="BankStatement_PriceInCurrency" xml:space="preserve">
+    <value>Kurs</value>
+  </data>
+  <data name="BankStatement_SecurityName" xml:space="preserve">
+    <value>Bezeichnung</value>
+  </data>
+  <data name="BankStatement_SecurityNumber" xml:space="preserve">
+    <value>WKN</value>
+  </data>
+  <data name="Quotes_Dump_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Quotes_Dump_PriceInEuro" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Quotes_Dump_SecurityId" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Transactions_Dump_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Transactions_Dump_Loss" xml:space="preserve">
+    <value>Loss</value>
+  </data>
+  <data name="Transactions_Dump_Nominal" xml:space="preserve">
+    <value>Nominal</value>
+  </data>
+  <data name="Transactions_Dump_PriceInEuro" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Transactions_Dump_Profit" xml:space="preserve">
+    <value>Profit</value>
+  </data>
+  <data name="Transactions_Dump_SecurityId" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Transactions_Dump_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Securities_Dump_QuotedPer" xml:space="preserve">
+    <value>Kursfaktor</value>
+  </data>
+  <data name="Securities_Dump_SecurityId" xml:space="preserve">
+    <value>WKN</value>
+  </data>
+  <data name="Securities_Dump_SecurityName" xml:space="preserve">
+    <value>Bezeichnung</value>
+  </data>
+  <data name="WriteImportedQuotes" xml:space="preserve">
+    <value>Saving imported quotes to the database</value>
+  </data>
+  <data name="CouldNotImportFile" xml:space="preserve">
+    <value>Could not import file '{0}'</value>
+  </data>
+  <data name="WriteImportedSecurities" xml:space="preserve">
+    <value>Saving imported securities to the database</value>
+  </data>
+  <data name="WriteImportedTransactions" xml:space="preserve">
+    <value>Saving imported transactions to the database</value>
+  </data>
+</root>

@@ -1,0 +1,21 @@
+using System.Threading.Tasks;
+using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces.Application;
+using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
+
+namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Application;
+
+public class RefreshContextCommand : IApplicationCommand {
+    protected IRefreshContext ContextOwner;
+
+    public bool MakeLogEntries => false;
+    public string Name => Properties.Resources.RefreshContextCommandName;
+    public async Task<bool> CanExecuteAsync() { return await Task.FromResult(true); }
+
+    public RefreshContextCommand(IRefreshContext contextOwner) {
+        ContextOwner = contextOwner;
+    }
+
+    public async Task ExecuteAsync(IApplicationCommandExecutionContext context) {
+        await ContextOwner.RefreshContextAsync();
+    }
+}

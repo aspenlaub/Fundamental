@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</RootNamespace>
+    <AssemblyName>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyName>
+    <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Deterministic>false</Deterministic>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <AssemblyTitle>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyTitle>
+    <AssemblyProduct>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyProduct>
+    <OutputType>Library</OutputType>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+    <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fundamental.csproj" />
+  </ItemGroup>
+</Project>

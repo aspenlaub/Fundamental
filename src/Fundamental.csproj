@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+    <ProjectGuid>{AC3EE9E6-430A-4C33-8A1F-C907FA4F4BF9}</ProjectGuid>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Aspenlaub.Net.GitHub.CSharp.Fundamental</RootNamespace>
+    <AssemblyName>Aspenlaub.Net.GitHub.CSharp.Fundamental</AssemblyName>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <StartupObject>Aspenlaub.Net.GitHub.CSharp.Fundamental.App</StartupObject>
+    <ApplicationIcon>Fundamental.ico</ApplicationIcon>
+    <TargetFrameworkProfile />
+    <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Deterministic>false</Deterministic>
+    <AssemblyTitle>Aspenlaub.Net.GitHub.CSharp.Fundamental</AssemblyTitle>
+    <AssemblyProduct>Aspenlaub.Net.GitHub.CSharp.Fundamental</AssemblyProduct>
+    <VersionDays>$([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse("2019-07-24"))).Days.ToString())</VersionDays>
+    <VersionMinutes>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::UtcNow.Date)).TotalMinutes)).ToString())</VersionMinutes>
+    <Version>2.0.$(VersionDays).$(VersionMinutes)</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <NuspecFile>Fundamental.nuspec</NuspecFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Model\**" />
+    <Compile Remove="Standard\**" />
+    <Compile Remove="TempWpf\**" />
+    <Compile Remove="TestResults\**" />
+    <Compile Remove="Test\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <EmbeddedResource Remove="Standard\**" />
+    <EmbeddedResource Remove="TempWpf\**" />
+    <EmbeddedResource Remove="TestResults\**" />
+    <EmbeddedResource Remove="Test\**" />
+    <None Remove="Model\**" />
+    <None Remove="Standard\**" />
+    <None Remove="TempWpf\**" />
+    <None Remove="TestResults\**" />
+    <None Remove="Test\**" />
+    <Page Remove="Model\**" />
+    <Page Remove="Standard\**" />
+    <Page Remove="TempWpf\**" />
+    <Page Remove="TestResults\**" />
+    <Page Remove="Test\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\add.png" />
+    <None Remove="Resources\refresh.png" />
+    <None Remove="Resources\save.png" />
+    <None Remove="Resources\undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\add.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\refresh.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\save.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\undo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Model\Fundamental.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
