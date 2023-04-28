@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
@@ -22,6 +22,7 @@ Global
 		{22F4217A-2078-4C95-8A20-B128E8F06F6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22F4217A-2078-4C95-8A20-B128E8F06F6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22F4217A-2078-4C95-8A20-B128E8F06F6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F4217A-2078-4C95-8A20-B128E8F06F6A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC02FB54-D7A2-44EB-B2FC-441CCDA335A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC02FB54-D7A2-44EB-B2FC-441CCDA335A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC02FB54-D7A2-44EB-B2FC-441CCDA335A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
