@@ -2,7 +2,7 @@
 #addin nuget:?package=Cake.Git&version=2.0.0
 #addin nuget:?package=System.Runtime.Loader
 #addin nuget:?package=Microsoft.Bcl.AsyncInterfaces
-#addin nuget:?package=Fusion50&loaddependencies=true&version=2.0.1040.1202
+#addin nuget:?package=Fusion-DotnetFive&loaddependencies=true&version=2.0.1488.770
 
 using Regex = System.Text.RegularExpressions.Regex;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +24,10 @@ using Aspenlaub.Net.GitHub.CSharp.Nuclide;
 using Aspenlaub.Net.GitHub.CSharp.Nuclide.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Nuclide.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Nuclide.Components;
-using Aspenlaub.Net.GitHub.CSharp.Fusion50;
-using Aspenlaub.Net.GitHub.CSharp.Fusion50.Interfaces;
-using Aspenlaub.Net.GitHub.CSharp.Fusion50.Components;
-using FolderUpdateMethod = Aspenlaub.Net.GitHub.CSharp.Fusion50.Interfaces.FolderUpdateMethod;
+using Aspenlaub.Net.GitHub.CSharp.Fusion;
+using Aspenlaub.Net.GitHub.CSharp.Fusion.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Fusion.Components;
+using FolderUpdateMethod = Aspenlaub.Net.GitHub.CSharp.Fusion.Interfaces.FolderUpdateMethod;
 
 masterDebugBinFolder = MakeAbsolute(Directory(masterDebugBinFolder)).FullPath;
 masterReleaseBinFolder = MakeAbsolute(Directory(masterReleaseBinFolder)).FullPath;
@@ -46,9 +46,8 @@ var tempCakeBuildFileName = tempFolder + "/build.cake.new";
 
 var mainNugetFeedId = NugetFeed.AspenlaubLocalFeed;
 
-var container = FusionContainerBuilder.CreateContainerUsingFusionNuclideProtchAndGitty();
+var container = FusionContainerBuilder.CreateContainerUsingFusionNuclideProtchAndGitty("Shatilaya");
 var currentGitBranch = container.Resolve<IGitUtilities>().CheckedOutBranch(new Folder(repositoryFolder));
-var latestBuildCakeUrl = "https://raw.githubusercontent.com/aspenlaub/Shatilaya/master/build.cake?g=" + System.Guid.NewGuid();
 
 var projectErrorsAndInfos = new ErrorsAndInfos();
 var projectLogic = container.Resolve<IProjectLogic>();
@@ -67,6 +66,19 @@ if (solutionSpecialSettingsDictionary.ContainsKey("CreateAndPushPackages")) {
   createAndPushPackages = createAndPushPackagesText == "TRUE";
 }
 
+var branchesWithPackagesRepository = container.Resolve<IBranchesWithPackagesRepository>();
+var bwpErrorsAndInfos = new ErrorsAndInfos();
+var idsOfBranchesWithPackages = await branchesWithPackagesRepository.GetBranchIdsAsync(bwpErrorsAndInfos);
+if (bwpErrorsAndInfos.Errors.Any()) {
+  throw new Exception(bwpErrorsAndInfos.ErrorsToString());
+}
+var isMasterOrBranchWithPackages = currentGitBranch == "master" || idsOfBranchesWithPackages.Contains(currentGitBranch);
+
+var latestBuildCakeUrl = "https://raw.githubusercontent.com/aspenlaub/Shatilaya/master/build.cake?g=" + System.Guid.NewGuid();
+if (isMasterOrBranchWithPackages) {
+  latestBuildCakeUrl = "https://raw.githubusercontent.com/aspenlaub/Shatilaya/" + currentGitBranch + "/build.cake?g=" + System.Guid.NewGuid();
+}
+
 Setup(ctx => { 
   Information("Repository folder is: " + repositoryFolder);
   Information("Solution is: " + solution);
@@ -77,6 +89,7 @@ Setup(ctx => {
   Information("Current GIT branch is: " + currentGitBranch);
   Information("Build cake is: " + buildCakeFileName);
   Information("Latest build cake URL is: " + latestBuildCakeUrl);
+  Information("Is master branch or branch with packages: " + (isMasterOrBranchWithPackages ? "true" : "false"));
 });
 
 Task("UpdateBuildCake")
@@ -157,7 +170,7 @@ Task("UpdateNuspec")
     var nuSpecFile = solutionFileFullName.Replace(".sln", ".nuspec");
     var nuSpecErrorsAndInfos = new ErrorsAndInfos();
     var headTipIdSha = container.Resolve<IGitUtilities>().HeadTipIdSha(new Folder(repositoryFolder));
-    await container.Resolve<INuSpecCreator>().CreateNuSpecFileIfRequiredOrPresentAsync(true, solutionFileFullName, new List<string> { headTipIdSha }, nuSpecErrorsAndInfos);
+    await container.Resolve<INuSpecCreator>().CreateNuSpecFileIfRequiredOrPresentAsync(true, solutionFileFullName, currentGitBranch, new List<string> { headTipIdSha }, nuSpecErrorsAndInfos);
     if (nuSpecErrorsAndInfos.Errors.Any()) {
       throw new Exception(nuSpecErrorsAndInfos.ErrorsToString());
     }
@@ -184,7 +197,7 @@ Task("VerifyThatThereAreUncommittedChanges")
   });
 
 Task("VerifyThatDevelopmentBranchIsAheadOfMaster")
-  .WithCriteria(() => currentGitBranch != "master")
+  .WithCriteria(() => !isMasterOrBranchWithPackages)
   .Description("Verify that if the development branch is at least one commit after the master")
   .Does(() => {
     if (!container.Resolve<IGitUtilities>().IsBranchAheadOfMaster(new Folder(repositoryFolder))) {
@@ -227,7 +240,7 @@ Task("VerifyThatDevelopmentBranchDoesNotHaveOpenPullRequests")
   });
 
 Task("VerifyThatPullRequestExistsForDevelopmentBranchHeadTip")
-  .WithCriteria(() => currentGitBranch != "master")
+  .WithCriteria(() => !isMasterOrBranchWithPackages)
   .Description("Verify that the master branch does have a pull request for the checked out development branch head tip")
   .Does(async () => {
     var noPullRequestsErrorsAndInfos = new ErrorsAndInfos();
@@ -277,7 +290,7 @@ Task("RunTestsOnDebugArtifacts")
   });
   
 Task("CopyDebugArtifacts")
-  .WithCriteria(() => currentGitBranch == "master")
+  .WithCriteria(() => isMasterOrBranchWithPackages)
   .Description("Copy Debug artifacts to master Debug binaries folder")
   .Does(async () => {
     var updater = container.Resolve<IFolderUpdater>();
@@ -287,7 +300,7 @@ Task("CopyDebugArtifacts")
       updater.UpdateFolder(new Folder(debugBinFolder.Replace('/', '\\')), new Folder(masterDebugBinFolder.Replace('/', '\\')), 
         FolderUpdateMethod.AssembliesButNotIfOnlySlightlyChanged, "Aspenlaub.Net.GitHub.CSharp." + solutionId, updaterErrorsAndInfos);
     } else {
-      await updater.UpdateFolderAsync(solutionId, headTipIdSha, new Folder(debugBinFolder.Replace('/', '\\')),
+      await updater.UpdateFolderAsync(solutionId, currentGitBranch, headTipIdSha, new Folder(debugBinFolder.Replace('/', '\\')),
         System.IO.File.ReadAllText(releaseBinHeadTipIdShaFile), new Folder(masterDebugBinFolder.Replace('/', '\\')),
         false, createAndPushPackages, mainNugetFeedId, updaterErrorsAndInfos);
     }
@@ -333,7 +346,7 @@ Task("RunTestsOnReleaseArtifacts")
   });
 
 Task("CopyReleaseArtifacts")
-  .WithCriteria(() => currentGitBranch == "master")
+  .WithCriteria(() => isMasterOrBranchWithPackages)
   .Description("Copy Release artifacts to master Release binaries folder")
   .Does(async () => {
     var updater = container.Resolve<IFolderUpdater>();
@@ -343,7 +356,7 @@ Task("CopyReleaseArtifacts")
       updater.UpdateFolder(new Folder(releaseBinFolder.Replace('/', '\\')), new Folder(masterReleaseBinFolder.Replace('/', '\\')), 
         FolderUpdateMethod.AssembliesButNotIfOnlySlightlyChanged, "Aspenlaub.Net.GitHub.CSharp." + solutionId, updaterErrorsAndInfos);
     } else {
-      await updater.UpdateFolderAsync(solutionId, headTipIdSha, new Folder(releaseBinFolder.Replace('/', '\\')),
+      await updater.UpdateFolderAsync(solutionId, currentGitBranch, headTipIdSha, new Folder(releaseBinFolder.Replace('/', '\\')),
         System.IO.File.ReadAllText(releaseBinHeadTipIdShaFile), new Folder(masterReleaseBinFolder.Replace('/', '\\')),
         true, createAndPushPackages, mainNugetFeedId, updaterErrorsAndInfos);
     }
@@ -355,7 +368,7 @@ Task("CopyReleaseArtifacts")
   });
 
 Task("CreateNuGetPackage")
-  .WithCriteria(() => currentGitBranch == "master" && createAndPushPackages)
+  .WithCriteria(() => isMasterOrBranchWithPackages && createAndPushPackages)
   .Description("Create nuget package in the master Release binaries folder")
   .Does(() => {
     var projectErrorsAndInfos = new ErrorsAndInfos();
@@ -380,12 +393,12 @@ Task("CreateNuGetPackage")
   });
 
 Task("PushNuGetPackage")
-  .WithCriteria(() => currentGitBranch == "master" && createAndPushPackages)
+  .WithCriteria(() => isMasterOrBranchWithPackages && createAndPushPackages)
   .Description("Push nuget package")
   .Does(async () => {
     var nugetPackageToPushFinder = container.Resolve<INugetPackageToPushFinder>();
     var finderErrorsAndInfos = new ErrorsAndInfos();
-    var packageToPush = await nugetPackageToPushFinder.FindPackageToPushAsync(mainNugetFeedId, new Folder(masterReleaseBinFolder.Replace('/', '\\')), new Folder(repositoryFolder.Replace('/', '\\')), solution.Replace('/', '\\'), finderErrorsAndInfos);
+    var packageToPush = await nugetPackageToPushFinder.FindPackageToPushAsync(mainNugetFeedId, new Folder(masterReleaseBinFolder.Replace('/', '\\')), new Folder(repositoryFolder.Replace('/', '\\')), solution.Replace('/', '\\'), currentGitBranch, finderErrorsAndInfos);
     if (finderErrorsAndInfos.Errors.Any()) {
       throw new Exception(finderErrorsAndInfos.ErrorsToString());
     }
@@ -468,7 +481,7 @@ Task("LittleThings")
   });
 
 Task("ValidatePackageUpdate")
-  .WithCriteria(() => currentGitBranch == "master")
+  .WithCriteria(() => isMasterOrBranchWithPackages)
   .Description("Build and test debug and release, update nuspec")
   .IsDependentOn("CleanRestorePull").IsDependentOn("VerifyThatThereAreUncommittedChanges")
   .IsDependentOn("BuildAndTestDebugAndRelease").IsDependentOn("UpdateNuspec")
