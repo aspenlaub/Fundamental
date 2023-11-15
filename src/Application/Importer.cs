@@ -178,7 +178,9 @@ public class Importer : IImporter {
 
             importContext.SaveChanges();
             var holdingDates = importContext.Holdings.Select(x => x.Date).Distinct().ToList();
-            foreach(var quoteDateWithoutHoldings in importContext.Quotes.Select(x => x.Date).Distinct().Where(x => !holdingDates.Contains(x))) {
+            var quoteDatesWithoutHoldings = importContext.Quotes.Select(x => x.Date).Distinct().ToList();
+            quoteDatesWithoutHoldings = quoteDatesWithoutHoldings.Where(x => !holdingDates.Contains(x)).ToList();
+            foreach (var quoteDateWithoutHoldings in quoteDatesWithoutHoldings) {
                 foreach (var security in importContext.Quotes.Where(x => quoteDateWithoutHoldings == x.Date).Select(x => x.Security)) {
                     if (securityIdsWithDataToSave.Contains(security.SecurityId)) { continue; }
 
