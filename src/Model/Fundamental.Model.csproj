@@ -24,6 +24,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Vishizhukel" Version="2.0.2058.1279" />
+    <PackageReference Include="Vishizhukel" Version="2.0.2064.1168" />
   </ItemGroup>
 </Project>
