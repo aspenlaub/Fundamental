@@ -169,6 +169,15 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date could not be extracted from file name.
+        /// </summary>
+        internal static string DateCouldNotBeExtractedFromFileName {
+            get {
+                return ResourceManager.GetString("DateCouldNotBeExtractedFromFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date tag {0} not found.
         /// </summary>
         internal static string DateTagNotFound {

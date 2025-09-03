@@ -270,4 +270,7 @@
   <data name="WriteImportedTransactions" xml:space="preserve">
     <value>Saving imported transactions to the database</value>
   </data>
+  <data name="DateCouldNotBeExtractedFromFileName" xml:space="preserve">
+    <value>Date could not be extracted from file name</value>
+  </data>
 </root>
