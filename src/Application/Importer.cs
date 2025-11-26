@@ -34,7 +34,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         var dirInfo = new DirectoryInfo(InFolder.FullName);
         FileInfo file = dirInfo.GetFiles('*' + bankStatementInfix + "*.csv", SearchOption.TopDirectoryOnly).FirstOrDefault();
         if (file != null) {
-            await ImportBankStatementAsync(file.Name, bankStatementInfix);
+            await ImportBankStatementAsync(file.Name);
             return;
         }
 
@@ -48,14 +48,14 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
             return;
         }
 
-        if (!File.Exists(InFolder.FullName + '\\' + Dumper.TransactionsFileName)) {
+        if (!(File.Exists(InFolder.FullName + '\\' + Dumper.TransactionsFileName) || File.Exists(InFolder.FullName + '\\' + Dumper.TransactionsJsonFileName))) {
             return;
         }
 
         await ImportTransactionsDumpAsync();
     }
 
-    public async Task ImportBankStatementAsync(string shortFileName, string bankStatementInfix) {
+    public async Task ImportBankStatementAsync(string shortFileName) {
         const char separator = ';';
 
         await SetFoldersIfNecessaryAsync();
@@ -129,7 +129,15 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         await using Context importContext = await ContextFactory.CreateAsync(EnvironmentType);
         await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, Dumper.QuotesFileName) });
         var dumper = new Dumper();
-        IList<Quote> quotes = dumper.ReadQuotes(InFolder.FullName + '\\', importContext.Securities);
+        var errorsAndInfos = new ErrorsAndInfos();
+        IList<Quote> quotes = dumper.ReadQuotes(InFolder.FullName + '\\', importContext.Securities, errorsAndInfos);
+        if (errorsAndInfos.AnyErrors()) {
+            foreach (string error in errorsAndInfos.Errors) {
+                await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = error });
+            }
+
+            return;
+        }
         if (quotes.Any()) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportResult, quotes.Count, 0) });
             await SaveImportedQuotesAsync(Dumper.QuotesFileName, 0, quotes);
@@ -252,7 +260,15 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         await using (await ContextFactory.CreateAsync(EnvironmentType)) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, Dumper.SecuritiesFileName) });
             var dumper = new Dumper();
-            IList<Security> securities = dumper.ReadSecurities(InFolder.FullName);
+            var errorsAndInfos = new ErrorsAndInfos();
+            IList<Security> securities = dumper.ReadSecurities(InFolder.FullName, errorsAndInfos);
+            if (errorsAndInfos.AnyErrors()) {
+                foreach (string error in errorsAndInfos.Errors) {
+                    await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = error });
+                }
+
+                return;
+            }
             if (securities.Any()) {
                 await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportResult, securities.Count, 0) });
                 await SaveImportedSecuritiesAsync(Dumper.SecuritiesFileName, securities);
@@ -291,7 +307,28 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         await using Context importContext = await ContextFactory.CreateAsync(EnvironmentType);
         await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, Dumper.TransactionsFileName) });
         var dumper = new Dumper();
-        IList<Transaction> transactions = dumper.ReadTransactions(InFolder.FullName, importContext.Securities);
+        var errorsAndInfos = new ErrorsAndInfos();
+        IList<Transaction> transactions = dumper.ReadTransactions(InFolder.FullName, importContext.Securities, errorsAndInfos);
+        if (errorsAndInfos.AnyErrors()) {
+            foreach (string error in errorsAndInfos.Errors) {
+                await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = error });
+            }
+
+            return;
+        }
+
+        if (!transactions.Any()) {
+            errorsAndInfos = new ErrorsAndInfos();
+            transactions = dumper.ReadTransactionsJson(InFolder.FullName, importContext.Securities, errorsAndInfos);
+            if (errorsAndInfos.AnyErrors()) {
+                foreach (string error in errorsAndInfos.Errors) {
+                    await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = error });
+                }
+
+                return;
+            }
+        }
+
         if (transactions.Any()) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportResult, transactions.Count, 0) });
             await SaveImportedTransactionsAsync(Dumper.TransactionsFileName, transactions);

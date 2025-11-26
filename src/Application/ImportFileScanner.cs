@@ -11,30 +11,27 @@ using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Application;
 
-public class ImportFileScanner : IImportFileScanner {
+public class ImportFileScanner(EnvironmentType environmentType, IApplicationCommandExecutionContext executionContext,
+            IFolderResolver folderResolver) : IImportFileScanner {
     protected IFolder RootFolder, InFolder;
-    protected EnvironmentType EnvironmentType;
-    protected IApplicationCommandExecutionContext ExecutionContext;
-    protected IFolderResolver FolderResolver;
-
-    public ImportFileScanner(EnvironmentType environmentType, IApplicationCommandExecutionContext executionContext, IFolderResolver folderResolver) {
-        EnvironmentType = environmentType;
-        ExecutionContext = executionContext;
-        FolderResolver = folderResolver;
-    }
+    protected EnvironmentType EnvironmentType = environmentType;
+    protected IApplicationCommandExecutionContext ExecutionContext = executionContext;
+    protected IFolderResolver FolderResolver = folderResolver;
 
     public async Task<bool> AnythingToImportAsync() {
         await SetFoldersIfNecessaryAsync();
 
         var dirInfo = new DirectoryInfo(InFolder.FullName);
-        return dirInfo.GetFiles("*.csv", SearchOption.TopDirectoryOnly).Any() || dirInfo.GetFiles("*.txt", SearchOption.TopDirectoryOnly).Any();
+        return dirInfo.GetFiles("*.csv", SearchOption.TopDirectoryOnly).Any()
+               || dirInfo.GetFiles("*.txt", SearchOption.TopDirectoryOnly).Any()
+               || dirInfo.GetFiles("*.json", SearchOption.TopDirectoryOnly).Any();
     }
 
     public async Task CopyInputFilesToEnvironmentsAsync() {
         await SetFoldersIfNecessaryAsync();
 
         var dirInfo = new DirectoryInfo(RootFolder.FullName);
-        foreach (var file in dirInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly)) {
+        foreach (FileInfo file in dirInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly)) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication() { Type = FeedbackType.LogInformation, Message = string.Format(Properties.Resources.FoundNewFile, file.Name) });
             foreach (EnvironmentType environmentType in Enum.GetValues(typeof(EnvironmentType))) {
                 CopyFileWithinEnvironment(environmentType, file);
@@ -45,7 +42,7 @@ public class ImportFileScanner : IImportFileScanner {
     }
 
     private void CopyFileWithinEnvironment(EnvironmentType environmentType, FileSystemInfo file) {
-        var inFolder = RootFolder.SubFolder(Enum.GetName(typeof(EnvironmentType), environmentType)).SubFolder("In");
+        IFolder inFolder = RootFolder.SubFolder(Enum.GetName(typeof(EnvironmentType), environmentType)).SubFolder("In");
         if (environmentType == EnvironmentType.UnitTest) {
             return;
         }

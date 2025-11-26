@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
@@ -19,6 +20,7 @@ using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Application;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 using Autofac;
+using IContainer = Autofac.IContainer;
 
 #pragma warning disable 4014
 
@@ -37,8 +39,8 @@ public partial class FundamentalWindow {
     public FundamentalWindow() : this(Context.DefaultEnvironmentType) { }
 
     public FundamentalWindow(EnvironmentType environmentType) {
-        var uiSynchronizationContext = SynchronizationContext.Current;
-        var container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
+        SynchronizationContext uiSynchronizationContext = SynchronizationContext.Current;
+        IContainer container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
         ReadyToUse = false;
         _ResetStatusInformationAfter = DateTime.Now;
         InitializeComponent();
@@ -127,7 +129,7 @@ public partial class FundamentalWindow {
         var selectedItem = tabControl.SelectedItem as TabItem;
         if (selectedItem == null) { return; }
 
-        var tabItemName = selectedItem.Name;
+        string tabItemName = selectedItem.Name;
         await ExecuteRefreshChartCommandsForTabAsync(tabItemName);
     }
 
@@ -135,13 +137,13 @@ public partial class FundamentalWindow {
         var selectedItem = FundamentalTabControl.SelectedItem as TabItem;
         if (selectedItem == null) { return; }
 
-        var tabItemName = selectedItem.Name;
+        string tabItemName = selectedItem.Name;
         await ExecuteRefreshChartCommandsForTabAsync(tabItemName);
     }
 
     public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedback) {
         using (_SimpleLogger.BeginScope(SimpleLoggingScopeId.Create(nameof(HandleFeedbackToApplicationAsync)))) {
-            var methodNamesFromStack = _MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
+            IList<string> methodNamesFromStack = _MethodNamesFromStackFramesExtractor.ExtractMethodNamesFromStackFrames();
             switch (feedback.Type) {
                 case FeedbackType.CommandExecutionCompleted: {
                     CommandExecutionCompletedHandler(feedback);
@@ -170,6 +172,13 @@ public partial class FundamentalWindow {
                     _SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
                 }
                     break;
+                case FeedbackType.ImportantMessage:
+                case FeedbackType.MessageOfNoImportance:
+                case FeedbackType.MessagesOfNoImportanceWereIgnored:
+                case FeedbackType.EnableCommand:
+                case FeedbackType.DisableCommand:
+                case FeedbackType.UnknownCommand:
+                case FeedbackType.CommandExecutionCompletedWithMessage:
                 default: {
                     throw new NotImplementedException();
                 }
@@ -196,7 +205,7 @@ public partial class FundamentalWindow {
                 SetStatusInformation(Properties.Resources.FileImported);
             }
         } else if (feedback.CommandType == typeof(RefreshHoldingsPerSecurityChartCommand)) {
-            var security = _FundamentalApplication.SecurityInFocus;
+            Security security = _FundamentalApplication.SecurityInFocus;
             HoldingsPerSecurityChart.Title = security != null ? string.Format(Properties.Resources.HoldingsPerSecurityChartTitle, security.SecurityId, security.SecurityName) : "";
             try {
                 HoldingsPerSecurityChart.Draw();
@@ -209,7 +218,7 @@ public partial class FundamentalWindow {
             RelativeSummaryChart.Draw();
         } else if (feedback.CommandType == typeof(AddTransactionCommand)) {
             if (TransactionDataGrid.Items.Count != 0) {
-                var item = TransactionDataGrid.Items[^1];
+                object item = TransactionDataGrid.Items[^1];
                 TransactionDataGrid.SelectedItem = item;
                 TransactionDataGrid.ScrollIntoView(item);
             }
@@ -247,7 +256,7 @@ public partial class FundamentalWindow {
     }
 
     private void FocusOnSecurity(Security security) {
-        var newSecurity = _FundamentalApplication.FocusOnSecurity(security);
+        Security newSecurity = _FundamentalApplication.FocusOnSecurity(security);
         TransactionDataGrid.IsReadOnly = newSecurity == null;
         if (security == null) { return; }
 

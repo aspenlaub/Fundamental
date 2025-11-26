@@ -37,7 +37,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     protected IContextFactory ContextFactory;
     protected IApplicationCommandExecutionContext ApplicationCommandExecutionContext;
     protected ISecretRepository SecretRepository;
-    private readonly ObservableCollection<LogEntry> _LogEntries = new();
+    private readonly ObservableCollection<LogEntry> _LogEntries = [];
 
     public FundamentalApplication(EnvironmentType environmentType,
             IApplicationCommandController controller, IApplicationCommandExecutionContext context,
@@ -46,7 +46,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         Disposed = false;
         UiSynchronizationContext = uiSynchronizationContext;
         ContextFactory = contextFactory;
-        SecurityIdsWithDataToSave = new HashSet<string>();
+        SecurityIdsWithDataToSave = [];
         HoldingsPerSecurityChartSource = new TimeSeriesChartSource();
         SummaryChartSource = new TimeSeriesChartSource();
         RelativeSummaryChartSource = new TimeSeriesChartSource();
@@ -77,7 +77,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public async Task RefreshContextAsync() {
-        var securityInFocusId = SecurityInFocus == null ? "" : SecurityInFocus.SecurityId;
+        string securityInFocusId = SecurityInFocus == null ? "" : SecurityInFocus.SecurityId;
         DetachCollectionChangedHandler();
         Context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
         await DataWasSavedAsync();
@@ -92,12 +92,12 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         RefreshSummaryChartData();
         await Controller.ExecuteAsync(typeof(RefreshSummaryChartCommand));
         await Controller.ExecuteAsync(typeof(RefreshRelativeSummaryChartCommand));
-        var security = Context.Securities.FirstOrDefault(s => s.SecurityId == securityInFocusId);
+        Security security = Context.Securities.FirstOrDefault(s => s.SecurityId == securityInFocusId);
         FocusOnSecurity(security);
     }
 
     protected void RefreshSummaryChartData() {
-        foreach (var summary in Context.DateSummaries.Local) {
+        foreach (DateSummary summary in Context.DateSummaries.Local) {
             SummaryChartSource.AddPoint(summary.Date, summary.QuoteValueInEuro);
             if (Math.Abs(summary.CostValueInEuro) < 0.001) { continue; }
             RelativeSummaryChartSource.AddPoint(summary.Date, Math.Round(100 * summary.QuoteValueInEuro / summary.CostValueInEuro, 1));
@@ -105,7 +105,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public Security FocusOnSecurity(Security security) {
-        var changed = SecurityInFocus != security;
+        bool changed = SecurityInFocus != security;
         SecurityInFocus = security ?? SecurityInFocus;
         if (changed) {
             Controller.ExecuteAsync(typeof(RefreshHoldingsPerSecurityChartCommand));
@@ -115,11 +115,10 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
 
     public bool ShowSecurity(Security s, bool showCurrentSecurities) {
         if (s == null) { return false; }
-        var securityId = s.SecurityId;
-        var holding = Context.Holdings.Where(x => x.Security.SecurityId == securityId).OrderByDescending(x => x.Date).FirstOrDefault();
-        var showAsCurrent = holding != null && holding.Date.Year >= DateTime.Now.Year - 1;
-        if (showCurrentSecurities) { return showAsCurrent; }
-        return !showAsCurrent;
+        string securityId = s.SecurityId;
+        Holding holding = Context.Holdings.Where(x => x.Security.SecurityId == securityId).OrderByDescending(x => x.Date).FirstOrDefault();
+        bool showAsCurrent = holding != null && holding.Date.Year >= DateTime.Now.Year - 1;
+        return showCurrentSecurities ? showAsCurrent : !showAsCurrent;
     }
 
     public bool ShowTransaction(Transaction t) {
@@ -158,49 +157,41 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public IDictionary<DateTime, double> VisibleChartPoints(uint chartId) {
-        var chartSource = ChartSource(chartId);
+        TimeSeriesChartSource chartSource = ChartSource(chartId);
         return chartSource.VisiblePoints();
     }
 
     public async Task ZoomInAsync(uint chartId) {
-        var chartSource = ChartSource(chartId);
+        TimeSeriesChartSource chartSource = ChartSource(chartId);
         chartSource.ZoomIn();
         await ExecuteRefreshChartCommandAsync(chartId);
     }
 
     public async Task ZoomOutAsync(uint chartId) {
-        var chartSource = ChartSource(chartId);
+        TimeSeriesChartSource chartSource = ChartSource(chartId);
         chartSource.ZoomOut();
         await ExecuteRefreshChartCommandAsync(chartId);
     }
 
     public async Task ScrollLeftAsync(uint chartId) {
-        var chartSource = ChartSource(chartId);
+        TimeSeriesChartSource chartSource = ChartSource(chartId);
         chartSource.ScrollLeft();
         await ExecuteRefreshChartCommandAsync(chartId);
     }
 
     public async Task ScrollRightAsync(uint chartId) {
-        var chartSource = ChartSource(chartId);
+        TimeSeriesChartSource chartSource = ChartSource(chartId);
         chartSource.ScrollRight();
         await ExecuteRefreshChartCommandAsync(chartId);
     }
 
     protected TimeSeriesChartSource ChartSource(uint chartId) {
-        switch (chartId) {
-            case (uint)Charts.HoldingsPerSecurity: {
-                return HoldingsPerSecurityChartSource;
-            }
-            case (uint)Charts.Summary: {
-                return SummaryChartSource;
-            }
-            case (uint)Charts.RelativeSummary: {
-                return RelativeSummaryChartSource;
-            }
-            default: {
-                throw new NotImplementedException();
-            }
-        }
+        return chartId switch {
+            (uint)Charts.HoldingsPerSecurity => HoldingsPerSecurityChartSource,
+            (uint)Charts.Summary => SummaryChartSource,
+            (uint)Charts.RelativeSummary => RelativeSummaryChartSource,
+            _ => throw new NotImplementedException()
+        };
     }
 
     public void RefreshChart(uint chartId) {
@@ -209,7 +200,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
             case (uint)Charts.HoldingsPerSecurity: {
                 if (SecurityInFocus == null) { return; }
                 HoldingsPerSecurityChartSource.Clear();
-                foreach (var holding in Context.Holdings.Local.Where(x => x.Security != null && x.Security.SecurityId == SecurityInFocus.SecurityId && Math.Abs(x.NominalBalance) > 0.001)) {
+                foreach (Holding holding in Context.Holdings.Local.Where(x => x.Security != null && x.Security.SecurityId == SecurityInFocus.SecurityId && Math.Abs(x.NominalBalance) > 0.001)) {
                     HoldingsPerSecurityChartSource.AddPoint(holding.Date, holding.QuoteValueInEuro);
                 }
             }
@@ -255,7 +246,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
 
     protected void DetachTransactionChangedHandlers() {
         if (Context == null) { return; }
-        foreach (var transaction in Context.Transactions.Local) {
+        foreach (Transaction transaction in Context.Transactions.Local) {
             transaction.PropertyChanged -= TransactionPropertyChangedAsync;
         }
     }
@@ -268,7 +259,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
 
     protected void AttachTransactionChangedHandlers() {
         if (Context == null) { return; }
-        foreach (var transaction in Context.Transactions.Local) {
+        foreach (Transaction transaction in Context.Transactions.Local) {
             transaction.PropertyChanged += TransactionPropertyChangedAsync;
         }
     }
@@ -295,20 +286,17 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     protected async Task DeleteInertTransactionsAsync() {
-        await using var context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
+        await using Context context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
         var inertTransactions = context.Transactions.Include(t => t.Security).Where(Inert).ToList();
         if (!inertTransactions.Any()) { return; }
-        foreach (var t in inertTransactions) {
+        foreach (Transaction t in inertTransactions) {
             context.Remove(t);
         }
         context.SaveChanges();
     }
 
     private static bool Inert(Transaction t) {
-        if (Math.Abs(t.Nominal) < 0.001 && Math.Abs(t.IncomeInEuro) < 0.001 && Math.Abs(t.ExpensesInEuro) < 0.001) {
-            return true;
-        }
-        return t.Security == null;
+        return Math.Abs(t.Nominal) < 0.001 && Math.Abs(t.IncomeInEuro) < 0.001 && Math.Abs(t.ExpensesInEuro) < 0.001 || t.Security == null;
     }
 
     public async Task UndoAsync() {
@@ -325,7 +313,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     protected async Task DataWasEnteredAsync() {
-        var anyChanged = SecurityIdsWithDataToSave.Any();
+        bool anyChanged = SecurityIdsWithDataToSave.Any();
         SecurityIdsWithDataToSave.Add(SecurityInFocus.SecurityId);
         if (anyChanged) { return; }
         await Controller.EnableCommandAsync(typeof(SaveCommand));
@@ -343,7 +331,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     public async Task ImportAsync() {
         var fundamentalSettingsSecret = new SecretFundamentalSettings();
         var errorsAndInfos = new ErrorsAndInfos();
-        var fundamentalSettings = await SecretRepository.GetAsync(fundamentalSettingsSecret, errorsAndInfos);
+        FundamentalSettings fundamentalSettings = await SecretRepository.GetAsync(fundamentalSettingsSecret, errorsAndInfos);
         if (errorsAndInfos.AnyErrors()) {
             throw new Exception(nameof(ImportAsync));
         }
@@ -355,8 +343,8 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     public async Task DumpAsync() {
         var dumper = new Dumper();
         var errorsAndInfos = new ErrorsAndInfos();
-        var dumpFolder = (await FolderResolver.ResolveAsync("$(MainUserFolder)", errorsAndInfos))
-                         .SubFolder("Fundamental").SubFolder(Enum.GetName(typeof(EnvironmentType), EnvironmentType)).SubFolder("Dump");
+        IFolder dumpFolder = (await FolderResolver.ResolveAsync("$(MainUserFolder)", errorsAndInfos))
+                             .SubFolder("Fundamental").SubFolder(Enum.GetName(typeof(EnvironmentType), EnvironmentType)).SubFolder("Dump");
         if (errorsAndInfos.AnyErrors()) {
             throw new Exception(errorsAndInfos.ErrorsToString());
         }

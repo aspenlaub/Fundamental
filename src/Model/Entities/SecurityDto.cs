@@ -1,15 +1,15 @@
+using System.Text.Json.Serialization;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
-public class SecurityDto : ISecurity {
-    public string SecurityId { get; set; }
-    public string SecurityName { get; set; }
-    public double QuotedPer { get; set; }
+public class SecurityDto(ISecurity security) : ISecurity {
+    [JsonPropertyName("SecurityId")]
+    public string SecurityId { get; set; } = security.SecurityId;
 
-    public SecurityDto(ISecurity security) {
-        SecurityId = security.SecurityId;
-        SecurityName = security.SecurityName;
-        QuotedPer = security.QuotedPer;
-    }
+    [JsonPropertyName("SecurityName")]
+    public string SecurityName { get; set; } = security.SecurityName;
+
+    [JsonPropertyName("QuotedPer")]
+    public double QuotedPer { get; set; } = security.QuotedPer;
 }

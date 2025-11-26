@@ -17,16 +17,12 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Application;
 
 [TestClass]
 public class ImporterTest {
-    private const string BankStatementInfix = "007_";
+    private const string _bankStatementInfix = "007_";
 
     protected TestHelper Helper;
     protected Importer Importer;
     protected IContainer Container;
-    protected readonly IContextFactory ContextFactory;
-
-    public ImporterTest() {
-        ContextFactory = new ContextFactory();
-    }
+    protected readonly IContextFactory ContextFactory = new ContextFactory();
 
     [TestInitialize]
     public async Task Initialize() {
@@ -45,10 +41,10 @@ public class ImporterTest {
         await ImportQuotesAsync();
         await using var context = await ContextFactory.CreateAsync(EnvironmentType.UnitTest);
         var quotes = context.Quotes.Where(x => x.Date == date).ToList();
-        Assert.AreEqual(1, quotes.Count);
+        Assert.HasCount(1, quotes);
         Assert.AreEqual(93, quotes[0].PriceInEuro);
         var holdings = context.Holdings.Where(x => x.Date == date).ToList();
-        Assert.AreEqual(1, holdings.Count);
+        Assert.HasCount(1, holdings);
         Assert.AreEqual(6510, holdings[0].QuoteValueInEuro);
     }
 
@@ -64,7 +60,7 @@ public class ImporterTest {
         await ImportQuotesAsync();
         await using (var context = await ContextFactory.CreateAsync(EnvironmentType.UnitTest)) {
             var holdings = context.Holdings.Where(x => x.Date == date).ToList();
-            Assert.AreEqual(1, holdings.Count);
+            Assert.HasCount(1, holdings);
             Assert.AreEqual(6510, holdings[0].QuoteValueInEuro);
         }
     }
@@ -84,12 +80,12 @@ public class ImporterTest {
         var folder = (await Container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)\Fundamental\src\Test\Application", errorsAndInfos)).FullName + "\\";
         Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
         var directoryInfo = new DirectoryInfo(folder);
-        var files = directoryInfo.GetFiles('*' + BankStatementInfix + "*.csv").ToList();
-        Assert.AreEqual(1, files.Count);
+        var files = directoryInfo.GetFiles('*' + _bankStatementInfix + "*.csv").ToList();
+        Assert.HasCount(1, files);
         var file = files[0];
         var inFolder = (await Container.Resolve<IFolderResolver>().ResolveAsync(@"$(MainUserFolder)\Fundamental\UnitTest\In", errorsAndInfos)).FullName + "\\";
         Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
         File.Copy(file.FullName, inFolder + file.Name, true);
-        await Importer.ImportBankStatementAsync(file.Name, BankStatementInfix);
+        await Importer.ImportBankStatementAsync(file.Name);
     }
 }
