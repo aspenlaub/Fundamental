@@ -74,6 +74,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="Model\Fundamental.Model.csproj" />
   </ItemGroup>
   <ItemGroup>

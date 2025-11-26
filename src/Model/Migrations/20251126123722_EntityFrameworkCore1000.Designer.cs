@@ -4,12 +4,15 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Migrations {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot {
-        protected override void BuildModel(ModelBuilder modelBuilder) {
+    [Migration("20251126123722_EntityFrameworkCore1000")]
+    partial class EntityFrameworkCore1000 {
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder) {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.0")
