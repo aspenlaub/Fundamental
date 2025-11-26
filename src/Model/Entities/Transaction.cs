@@ -6,45 +6,51 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 
 // ReSharper disable UnusedMember.Global
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
 public class Transaction : IGuid, INotifyPropertyChanged, ITransaction {
     [Key]
-    public string Guid { get; set; }
+    public string Guid { get; set; } = System.Guid.NewGuid().ToString();
 
-    private DateTime _PrivateDate;
-    public DateTime Date { get => _PrivateDate; set { _PrivateDate = value; OnPropertyChanged(nameof(Date)); } }
+    public DateTime Date {
+        get;
+        set { field = value; OnPropertyChanged(nameof(Date)); }
+    } = DateTime.Today;
 
     public string SecurityGuid { get; set; }
-    private Security _PrivateSecurity;
+
     [ForeignKey("SecurityGuid")]
-    public Security Security { get => _PrivateSecurity; set { _PrivateSecurity = value; OnPropertyChanged(nameof(Security)); } }
-
-    private TransactionType _PrivateTransactionType;
-    public TransactionType TransactionType { get => _PrivateTransactionType; set { _PrivateTransactionType = value; OnPropertyChanged(nameof(TransactionType)); } }
-
-    private double _PrivateNominal;
-    public double Nominal { get => _PrivateNominal; set { _PrivateNominal = value; OnPropertyChanged(nameof(Nominal)); } }
-
-    private double _PrivatePriceInEuro;
-    public double PriceInEuro { get => _PrivatePriceInEuro; set { _PrivatePriceInEuro = value; OnPropertyChanged(nameof(PriceInEuro)); } }
-
-    private double _PrivateExpensesInEuro;
-    public double ExpensesInEuro { get => _PrivateExpensesInEuro; set { _PrivateExpensesInEuro = value; OnPropertyChanged(nameof(ExpensesInEuro)); } }
-
-    private double _PrivateIncomeInEuro;
-    public double IncomeInEuro { get => _PrivateIncomeInEuro; set { _PrivateIncomeInEuro = value; OnPropertyChanged(nameof(IncomeInEuro)); } }
-
-    public Transaction() {
-        Guid = System.Guid.NewGuid().ToString();
-        _PrivateDate = DateTime.Today;
-        _PrivateTransactionType = TransactionType.None;
-        _PrivateNominal = 0;
-        _PrivatePriceInEuro = 0;
-        _PrivateExpensesInEuro = 0;
-        _PrivateIncomeInEuro = 0;
+    public Security Security {
+        get;
+        set { field = value; OnPropertyChanged(nameof(Security)); }
     }
+
+    public TransactionType TransactionType {
+        get;
+        set { field = value; OnPropertyChanged(nameof(TransactionType)); }
+    } = TransactionType.None;
+
+    public double Nominal {
+        get;
+        set { field = value; OnPropertyChanged(nameof(Nominal)); }
+    } = 0;
+
+    public double PriceInEuro {
+        get;
+        set { field = value; OnPropertyChanged(nameof(PriceInEuro)); }
+    } = 0;
+
+    public double ExpensesInEuro {
+        get;
+        set { field = value; OnPropertyChanged(nameof(ExpensesInEuro)); }
+    } = 0;
+
+    public double IncomeInEuro {
+        get;
+        set { field = value; OnPropertyChanged(nameof(IncomeInEuro)); }
+    } = 0;
 
     protected void OnPropertyChanged(string propertyName) {
         // ReSharper disable once UseNullPropagation

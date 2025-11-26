@@ -18,13 +18,8 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Database;
 
 [TestClass]
 public class DumperTest {
-    private readonly IContainer _Container;
-    private readonly IContextFactory _ContextFactory;
-
-    public DumperTest() {
-        _Container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
-        _ContextFactory = new ContextFactory();
-    }
+    private readonly IContainer _Container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
+    private readonly IContextFactory _ContextFactory = new ContextFactory();
 
     [TestMethod]
     public async Task CanDumpSecurities() {

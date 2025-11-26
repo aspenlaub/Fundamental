@@ -4,8 +4,8 @@ using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Application;
 
-public class AddTransactionCommand : IApplicationCommand {
-    protected IAddTransaction ContextOwner;
+public class AddTransactionCommand(IAddTransaction contextOwner) : IApplicationCommand {
+    protected IAddTransaction ContextOwner = contextOwner;
 
     public bool MakeLogEntries => true;
     public string Name => Properties.Resources.SaveCommandName;
@@ -14,10 +14,6 @@ public class AddTransactionCommand : IApplicationCommand {
         if (!ContextOwner.IsSecurityInFocus()) { return false; }
 
         return await Task.FromResult(!ContextOwner.IsAnInertTransactionPresent());
-    }
-
-    public AddTransactionCommand(IAddTransaction contextOwner) {
-        ContextOwner = contextOwner;
     }
 
     public Task ExecuteAsync(IApplicationCommandExecutionContext context) {

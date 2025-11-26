@@ -20,11 +20,11 @@ public class TestDataRepository {
     public ObservableCollection<Transaction> Transactions { get; }
 
     public TestDataRepository() {
-        Securities = new ObservableCollection<Security>() {
-            new() { SecurityId = ShareId, SecurityName ="MAN VZ", QuotedPer = 1, Guid = ShareGuid },
-            new() { SecurityId = BondId, SecurityName = "3,00-7,00% BSB A 97/3 SL1/1", QuotedPer = 100, Guid = BondGuid },
-        };
-        Quotes = new ObservableCollection<Quote>();
+        Securities = [
+            new Security { SecurityId = ShareId, SecurityName = "MAN VZ", QuotedPer = 1, Guid = ShareGuid },
+            new Security { SecurityId = BondId, SecurityName = "3,00-7,00% BSB A 97/3 SL1/1", QuotedPer = 100, Guid = BondGuid }
+        ];
+        Quotes = [];
         AddQuote(NoHoldingsDate, ShareId, 202.98);
         AddQuote(NoHoldingsDate, BondId, 100);
         AddQuote(QuoteAndPartialSellDate, ShareId, 209.11);
@@ -33,7 +33,7 @@ public class TestDataRepository {
         AddQuote(QuoteOnlyDate, BondId, 100);
         AddQuote(LastQuoteDate, ShareId, 23.86);
         AddQuote(LastQuoteDate, BondId, 100);
-        Transactions = new ObservableCollection<Transaction>();
+        Transactions = [];
         AddTransaction(InitialBuysDate, ShareId, TransactionType.Buy, 10, 204.7, 42.7, 0);
         AddTransaction(InitialBuysDate, BondId, TransactionType.Buy, 2070, 100, 4.27, 0);
         AddTransaction(QuoteAndPartialSellDate, ShareId, TransactionType.Sell, 3, 209.24, 24.7, 0);

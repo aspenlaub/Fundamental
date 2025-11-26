@@ -2,6 +2,8 @@ using System;
 using System.Windows;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
 
+// ReSharper disable AsyncVoidEventHandlerMethod
+
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental;
 
 public partial class App {
@@ -9,7 +11,7 @@ public partial class App {
         base.OnStartup(e);
         try {
             var contextFactory = new ContextFactory();
-            await using var db = await contextFactory.CreateAsync(Context.DefaultEnvironmentType);
+            await using Context db = await contextFactory.CreateAsync(Context.DefaultEnvironmentType);
             db.Migrate();
         } catch (Exception ex) {
             MessageBox.Show(ex.Message, "Exception on startup", MessageBoxButton.OK, MessageBoxImage.Error);

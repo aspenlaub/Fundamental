@@ -185,8 +185,6 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
             quoteDatesWithoutHoldings = quoteDatesWithoutHoldings.Where(x => !holdingDates.Contains(x)).ToList();
             foreach (DateTime quoteDateWithoutHoldings in quoteDatesWithoutHoldings) {
                 foreach (Security security in importContext.Quotes.Where(x => quoteDateWithoutHoldings == x.Date).Select(x => x.Security)) {
-                    if (securityIdsWithDataToSave.Contains(security.SecurityId)) { continue; }
-
                     securityIdsWithDataToSave.Add(security.SecurityId);
                 }
             }
@@ -367,7 +365,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
                     updatedTransactions++;
                 }
 
-                if (security == null || securityIdsWithDataToSave.Contains(security.SecurityId)) {
+                if (security == null) {
                     continue;
                 }
 

@@ -18,6 +18,8 @@ using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 using Microsoft.EntityFrameworkCore;
 
+// ReSharper disable AsyncVoidEventHandlerMethod
+
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Application;
 
 public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChart, ITimeSeriesChartApplication, ISave, IUndo, IImport, IAddTransaction {

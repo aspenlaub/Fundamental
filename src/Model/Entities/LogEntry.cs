@@ -7,19 +7,21 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
 public class LogEntry : IGuid, INotifyPropertyChanged {
     [Key]
-    public string Guid { get; set; }
+    public string Guid { get; set; } = System.Guid.NewGuid().ToString();
 
-    private DateTime _PrivateLogTime;
-    public DateTime LogTime { get => _PrivateLogTime; set { _PrivateLogTime = value; OnPropertyChanged(nameof(LogTime)); } }
+    public DateTime LogTime {
+        get;
+        set { field = value; OnPropertyChanged(nameof(LogTime)); }
+    }
 
-    private string _PrivateLogType;
-    public string LogType { get => _PrivateLogType; set { _PrivateLogType = value; OnPropertyChanged(nameof(LogType)); } }
+    public string LogType {
+        get;
+        set { field = value; OnPropertyChanged(nameof(LogType)); }
+    }
 
-    private string _PrivateLogMessage;
-    public string LogMessage { get => _PrivateLogMessage; set { _PrivateLogMessage = value; OnPropertyChanged(nameof(LogMessage)); } }
-
-    public LogEntry() {
-        Guid = System.Guid.NewGuid().ToString();
+    public string LogMessage {
+        get;
+        set { field = value; OnPropertyChanged(nameof(LogMessage)); }
     }
 
     protected void OnPropertyChanged(string propertyName) {

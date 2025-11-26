@@ -13,11 +13,11 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Application;
 public class FundamentalSettingsTest {
     [TestMethod]
     public async Task CanGetFundamentalSettings() {
-        var container = new ContainerBuilder().UsePegh(nameof(FundamentalSettingsTest), new DummyCsArgumentPrompter()).Build();
+        IContainer container = new ContainerBuilder().UsePegh(nameof(FundamentalSettingsTest), new DummyCsArgumentPrompter()).Build();
         var secret = new SecretFundamentalSettings();
         var errorsAndInfos = new ErrorsAndInfos();
-        var settings = await container.Resolve<ISecretRepository>().GetAsync(secret, errorsAndInfos);
+        FundamentalSettings settings = await container.Resolve<ISecretRepository>().GetAsync(secret, errorsAndInfos);
         Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
-        Assert.IsTrue(!string.IsNullOrEmpty(settings.BankStatementInfix));
+        Assert.IsFalse(string.IsNullOrEmpty(settings.BankStatementInfix));
     }
 }

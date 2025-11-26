@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Application;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
+using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Components;
@@ -33,16 +34,14 @@ public class WhenWorkingWithFundamentalApplication {
     }
 
     protected void FocusOnSecurity(string securityId) {
-        var security = Application.Securities().FirstOrDefault(x => x.SecurityId == securityId);
+        Security security = Application.Securities().FirstOrDefault(x => x.SecurityId == securityId);
         Assert.IsNotNull(security);
         Application.FocusOnSecurity(security);
     }
 }
 
 [TestClass]
-public class FundamentalApplicationTest : WhenWorkingWithFundamentalApplication {
-    public FundamentalApplicationTest() : base(new ContextFactory()) {
-    }
+public class FundamentalApplicationTest() : WhenWorkingWithFundamentalApplication(new ContextFactory()) {
 
     [TestInitialize]
     public async Task Initialize() {
@@ -65,7 +64,7 @@ public class FundamentalApplicationTest : WhenWorkingWithFundamentalApplication 
     public async Task CanFocusOnSecurity() {
         await Controller.ExecuteAsync(typeof(RefreshContextCommand));
         FocusOnSecurity(TestDataRepository.ShareId);
-        Assert.AreEqual(Application.SecurityInFocus.SecurityId, TestDataRepository.ShareId);
+        Assert.AreEqual(TestDataRepository.ShareId, Application.SecurityInFocus.SecurityId);
     }
 
     [TestMethod]
@@ -78,13 +77,13 @@ public class FundamentalApplicationTest : WhenWorkingWithFundamentalApplication 
     public async Task HoldingsAreUpdatedWhenModifiedTransactionIsSaved() {
         await Controller.ExecuteAsync(typeof(RefreshContextCommand));
         FocusOnSecurity(TestDataRepository.ShareId);
-        var transaction = Application.Transactions().FirstOrDefault(x => x.Security == Application.SecurityInFocus && x.Date == TestDataRepository.CouponAndDividendDate && x.IncomeInEuro > 0);
+        Transaction transaction = Application.Transactions().FirstOrDefault(x => x.Security == Application.SecurityInFocus && x.Date == TestDataRepository.CouponAndDividendDate && x.IncomeInEuro > 0);
         Assert.IsNotNull(transaction);
         transaction.Nominal = transaction.Nominal;
         Assert.IsTrue(await Controller.EnabledAsync(typeof(SaveCommand)));
         await Controller.ExecuteAsync(typeof(SaveCommand));
-        await using var context = await ContextFactory.CreateAsync(EnvironmentType.UnitTest);
-        var holding = context.Holdings.Include(h => h.Security).FirstOrDefault(x => x.Security == Application.SecurityInFocus && x.Date == TestDataRepository.LastQuoteDate);
+        await using Context context = await ContextFactory.CreateAsync(EnvironmentType.UnitTest);
+        Holding holding = context.Holdings.Include(h => h.Security).FirstOrDefault(x => x.Security == Application.SecurityInFocus && x.Date == TestDataRepository.LastQuoteDate);
         Assert.IsNotNull(holding);
         Assert.IsTrue(Helper.IsHoldingEqualTo(holding, TestDataRepository.LastQuoteDate, TestDataRepository.ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
     }

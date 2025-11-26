@@ -7,12 +7,8 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Calculation;
 
 public class DateSummaryCalculator : IDateSummaryCalculator {
-    protected List<Holding> Holdings;
+    protected List<Holding> Holdings = [];
     protected IList<DateSummary> DateSummaries;
-
-    public DateSummaryCalculator() {
-        Holdings = new List<Holding>();
-    }
 
     public IDateSummaryCalculator WithHoldings(IList<Holding> holdings) {
         Holdings.AddRange(holdings);
@@ -22,8 +18,8 @@ public class DateSummaryCalculator : IDateSummaryCalculator {
 
     public IList<DateSummary> CalculateDateSummaries() {
         DateSummaries = new List<DateSummary>();
-        foreach(var holding in Holdings.Where(x => Math.Abs(x.NominalBalance) > 0.001)) {
-            var summary = DateSummaries.FirstOrDefault(x => x.Date == holding.Date);
+        foreach(Holding holding in Holdings.Where(x => Math.Abs(x.NominalBalance) > 0.001)) {
+            DateSummary summary = DateSummaries.FirstOrDefault(x => x.Date == holding.Date);
             if (summary == null) {
                 summary = new DateSummary() { Date = holding.Date };
                 DateSummaries.Add(summary);

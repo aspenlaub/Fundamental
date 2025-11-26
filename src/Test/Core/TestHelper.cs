@@ -6,12 +6,8 @@ using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
 
-public class TestHelper {
-    protected IContextFactory ContextFactory;
-
-    public TestHelper(IContextFactory contextFactory) {
-        ContextFactory = contextFactory;
-    }
+public class TestHelper(IContextFactory contextFactory) {
+    protected IContextFactory ContextFactory = contextFactory;
 
     public bool IsHoldingEqualTo(Holding holding, DateTime date, string securityId, double nominal, double costValue, double quoteValue,
                                  double realizedLoss, double realizedProfit, double unrealizedLoss, double unrealizedProfit) {

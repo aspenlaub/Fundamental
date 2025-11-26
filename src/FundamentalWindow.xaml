@@ -49,14 +49,14 @@
                     </Grid.RowDefinitions>
                     <DataGrid x:Name="SecurityDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding Source={StaticResource SecurityViewSource}}" RowDetailsVisibilityMode="VisibleWhenSelected" Grid.Column="0" Grid.Row="0" CurrentCellChanged="SecurityDataGrid_CurrentCellChanged">
                         <DataGrid.Columns>
-                            <DataGridTextColumn x:Name="SecurityIdColumn" Binding="{Binding SecurityId}" Header="Security Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="SecurityIdColumn" Binding="{Binding SecurityId}" Header="Security ID" Width="SizeToHeader"/>
                             <DataGridTextColumn x:Name="SecurityNameColumn" Binding="{Binding SecurityName}" Header="Security Name" Width="SizeToHeader"/>
                             <DataGridTextColumn x:Name="QuotedPerColumn" Binding="{Binding QuotedPer}" Header="Quoted Per" Width="SizeToHeader"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <DataGrid x:Name="OtherSecurityDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding Source={StaticResource OtherSecurityViewSource}}" RowDetailsVisibilityMode="VisibleWhenSelected" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" CurrentCellChanged="OtherSecurityDataGrid_CurrentCellChanged">
                         <DataGrid.Columns>
-                            <DataGridTextColumn x:Name="OtherSecurityIdColumn" Binding="{Binding SecurityId}" Header="Security Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="OtherSecurityIdColumn" Binding="{Binding SecurityId}" Header="Security ID" Width="SizeToHeader"/>
                             <DataGridTextColumn x:Name="OtherSecurityNameColumn" Binding="{Binding SecurityName}" Header="Security Name" Width="SizeToHeader"/>
                             <DataGridTextColumn x:Name="OtherQuotedPerColumn" Binding="{Binding QuotedPer}" Header="Quoted Per" Width="SizeToHeader"/>
                         </DataGrid.Columns>

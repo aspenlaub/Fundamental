@@ -56,7 +56,7 @@ public class TimeSeriesChartSource {
             if (startDate == null || startDate < ChartPoints.Keys.First()) {
                 startDate = ChartPoints.Keys.First();
             } else {
-                var minStartDate = ChartPoints.Keys.Last() - VisibleTimeSpan;
+                DateTime? minStartDate = ChartPoints.Keys.Last() - VisibleTimeSpan;
                 if (startDate > minStartDate) {
                     startDate = minStartDate;
                 }
@@ -85,7 +85,7 @@ public class TimeSeriesChartSource {
         if (VisibleTimeSpan == null || StartDate == null) { return; }
 
         var timeSpan = (TimeSpan)VisibleTimeSpan;
-        var date = ((DateTime)StartDate).AddDays(Math.Floor((double)timeSpan.Days / 2));
+        DateTime date = ((DateTime)StartDate).AddDays(Math.Floor((double)timeSpan.Days / 2));
         StartDate = date;
         UpdateStartDate();
     }
@@ -95,7 +95,7 @@ public class TimeSeriesChartSource {
         if (VisibleTimeSpan == null || StartDate == null) { return; }
 
         var timeSpan = (TimeSpan)VisibleTimeSpan;
-        var date = ((DateTime)StartDate).AddDays(- Math.Floor((double)timeSpan.Days / 2));
+        DateTime date = ((DateTime)StartDate).AddDays(- Math.Floor((double)timeSpan.Days / 2));
         StartDate = date;
         UpdateStartDate();
     }

@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
 public class Holding : IGuid {
     [Key]
-    public string Guid { get; set; }
+    public string Guid { get; set; } = System.Guid.NewGuid().ToString();
 
     public DateTime Date { get; set; }
 
@@ -22,8 +24,4 @@ public class Holding : IGuid {
     public double RealizedProfitInEuro { get; set; }
     public double UnrealizedLossInEuro { get; set; }
     public double UnrealizedProfitInEuro { get; set; }
-
-    public Holding() {
-        Guid = System.Guid.NewGuid().ToString();
-    }
 }

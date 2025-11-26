@@ -24,9 +24,11 @@ using IContainer = Autofac.IContainer;
 
 #pragma warning disable 4014
 
+// ReSharper disable once UnusedMember.Global
+// ReSharper disable AsyncVoidEventHandlerMethod
+
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental;
 
-// ReSharper disable once UnusedMember.Global
 public partial class FundamentalWindow {
     private readonly ApplicationCommandController _Controller;
     private readonly FundamentalApplication _FundamentalApplication;

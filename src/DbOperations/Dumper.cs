@@ -249,14 +249,35 @@ public class Dumper {
         }
 
         string json = string.Join(" ", File.ReadAllLines(fileName));
+        List<TransactionDto> transactionDtos;
+
         try {
-            JsonSerializer.Deserialize<List<TransactionDto>>(json);
+            transactionDtos = JsonSerializer.Deserialize<List<TransactionDto>>(json);
         } catch (Exception e) {
             errorsAndInfos.Errors.Add($"Could not deserialize import file ({e.Message})");
             return new List<Transaction>();
         }
 
-        errorsAndInfos.Errors.Add("Not implemented yet");
-        return new List<Transaction>();
+        var transactions = new List<Transaction>();
+        foreach (TransactionDto transactionDto in transactionDtos) {
+            var transaction = new Transaction {
+                Date = transactionDto.Date,
+                Security = securities.FirstOrDefault(x => x.SecurityId == transactionDto.SecurityDto.SecurityId),
+                TransactionType = transactionDto.TransactionType,
+                Nominal = transactionDto.Nominal,
+                PriceInEuro = transactionDto.PriceInEuro,
+                ExpensesInEuro = transactionDto.ExpensesInEuro,
+                IncomeInEuro = transactionDto.IncomeInEuro
+            };
+            if (transaction.Security == null) {
+                errorsAndInfos.Errors.Add($"Cannot find security {transactionDto.SecurityDto.SecurityId}");
+                continue;
+            }
+
+            transactions.Add(transaction);
+
+        }
+
+        return transactions;
     }
 } 

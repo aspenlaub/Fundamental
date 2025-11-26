@@ -32,7 +32,9 @@ public class Context : ContextBase {
     public Context(DataSources dataSources) : this(DefaultEnvironmentType, SynchronizationContext.Current, dataSources) { }
     public Context(EnvironmentType environmentType, DataSources dataSources) : this(environmentType, SynchronizationContext.Current, dataSources) { }
 
-    public Context(EnvironmentType environmentType, SynchronizationContext uiSynchronizationContext, DataSources dataSources) : base(environmentType, uiSynchronizationContext, "Aspenlaub.Net.GitHub.CSharp.Fundamental", new ConnectionStringInfos(), dataSources) {
+    public Context(EnvironmentType environmentType, SynchronizationContext uiSynchronizationContext, DataSources dataSources)
+        : base(environmentType, uiSynchronizationContext, "Aspenlaub.Net.GitHub.CSharp.Fundamental",
+            [], dataSources) {
         DefaultEnvironmentType = environmentType;
         EnvironmentType = environmentType;
     }
@@ -51,8 +53,6 @@ public class Context : ContextBase {
     }
 
     public static DataSources DefaultDataSources() {
-        return new DataSources {
-            new() { MachineId = Environment.MachineName, TheDataSource = $"{Environment.MachineName}\\SQLEXPRESS" }
-        };
+        return [ new DataSource { MachineId = Environment.MachineName, TheDataSource = $"{Environment.MachineName}\\SQLEXPRESS" } ];
     }
 }

@@ -4,25 +4,30 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
 
+// ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
+
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
 public class Quote : IGuid, INotifyPropertyChanged {
     [Key]
-    public string Guid { get; set; }
+    public string Guid { get; set; } = System.Guid.NewGuid().ToString();
 
-    private DateTime _PrivateDate;
-    public DateTime Date {  get => _PrivateDate; set { _PrivateDate = value;  OnPropertyChanged(nameof(Date)); } }
+    public DateTime Date {
+        get;
+        set { field = value;  OnPropertyChanged(nameof(Date)); }
+    }
 
     public string SecurityGuid { get; set; }
-    private Security _PrivateSecurity;
+
     [ForeignKey("SecurityGuid")]
-    public Security Security { get => _PrivateSecurity; set { _PrivateSecurity = value; OnPropertyChanged(nameof(Security)); } }
+    public Security Security {
+        get;
+        set { field = value; OnPropertyChanged(nameof(Security)); }
+    }
 
-    private double _PrivatePriceInEuro;
-    public double PriceInEuro { get => _PrivatePriceInEuro; set { _PrivatePriceInEuro = value; OnPropertyChanged(nameof(PriceInEuro)); } }
-
-    public Quote() {
-        Guid = System.Guid.NewGuid().ToString();
+    public double PriceInEuro {
+        get;
+        set { field = value; OnPropertyChanged(nameof(PriceInEuro)); }
     }
 
     protected void OnPropertyChanged(string propertyName) {

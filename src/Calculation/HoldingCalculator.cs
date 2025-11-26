@@ -7,14 +7,9 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Calculation;
 
 public class HoldingCalculator : IHoldingCalculator {
-    protected List<Transaction> Transactions;
-    protected List<Quote> Quotes;
+    protected List<Transaction> Transactions = [];
+    protected List<Quote> Quotes = [];
     protected IList<Holding> Holdings;
-
-    public HoldingCalculator() {
-        Transactions = new List<Transaction>();
-        Quotes = new List<Quote>();
-    }
 
     public IHoldingCalculator WithTransactions(IList<Transaction> transactions) {
         Transactions.AddRange(transactions);
@@ -28,7 +23,7 @@ public class HoldingCalculator : IHoldingCalculator {
 
     public IList<Holding> CalculateHoldings() {
         Holdings = new List<Holding>();
-        foreach(var quote in Quotes) {
+        foreach(Quote quote in Quotes) {
             UpdateHoldingsWithQuote(quote);
         }
         SortHoldings();
@@ -41,17 +36,17 @@ public class HoldingCalculator : IHoldingCalculator {
 
     protected void UpdateHoldingsWithQuote(Quote quote) {
         SortTransactions();
-        var transactions = TransactionsForQuote(quote);
+        IList<Transaction> transactions = TransactionsForQuote(quote);
         if (!transactions.Any()) { return; }
-        var holding = HoldingForQuote(quote, HoldingForQuoteModes.Same);
-        foreach(var transaction in transactions) {
+        Holding holding = HoldingForQuote(quote, HoldingForQuoteModes.Same);
+        foreach(Transaction transaction in transactions) {
             AddTransactionToHoldingWithQuote(transaction, holding, quote);
         }
         if (Math.Abs(holding.NominalBalance) > 0.001) { return; }
-        var nextHolding = HoldingForQuote(quote, HoldingForQuoteModes.Next);
+        Holding nextHolding = HoldingForQuote(quote, HoldingForQuoteModes.Next);
         if (nextHolding != null && Math.Abs(nextHolding.NominalBalance) > 0.001) { return; }
         if (nextHolding == null) {
-            var lastHolding = HoldingForQuote(quote, HoldingForQuoteModes.LastBefore);
+            Holding lastHolding = HoldingForQuote(quote, HoldingForQuoteModes.LastBefore);
             if (lastHolding != null && Math.Abs(lastHolding.NominalBalance) > 0.001) { return; }
         }
         Holdings.Remove(holding);
@@ -62,7 +57,7 @@ public class HoldingCalculator : IHoldingCalculator {
     }
 
     public string SortValue(Transaction transaction) {
-        var s = transaction.Date.ToString("yyyyMMdd") + transaction.Security.SecurityId + (transaction.TransactionType == TransactionType.Sell ? '0' : '1');
+        string s = transaction.Date.ToString("yyyyMMdd") + transaction.Security.SecurityId + (transaction.TransactionType == TransactionType.Sell ? '0' : '1');
         return s;
     }
 
@@ -95,7 +90,7 @@ public class HoldingCalculator : IHoldingCalculator {
                 throw new NotImplementedException();
             }
         }
-        var holding = Holdings.FirstOrDefault(x => x.Security.SecurityId == quote.Security.SecurityId && x.Date == date);
+        Holding holding = Holdings.FirstOrDefault(x => x.Security.SecurityId == quote.Security.SecurityId && x.Date == date);
         if (holding != null) {
             return holding;
         }
@@ -105,9 +100,9 @@ public class HoldingCalculator : IHoldingCalculator {
     }
 
     protected void AddTransactionToHoldingWithQuote(Transaction transaction, Holding holding, Quote quote) {
-        var transactionSign = transaction.TransactionType == TransactionType.Buy ? 1 : transaction.TransactionType == TransactionType.Sell ? -1 : 0;
-        var nominalChange = transaction.Nominal * transactionSign;
-        var newCostValue = holding.CostValueInEuro;
+        int transactionSign = transaction.TransactionType == TransactionType.Buy ? 1 : transaction.TransactionType == TransactionType.Sell ? -1 : 0;
+        double nominalChange = transaction.Nominal * transactionSign;
+        double newCostValue = holding.CostValueInEuro;
         double realizedProfitOrLoss = 0;
         switch (transactionSign) {
             case 1:
@@ -119,8 +114,8 @@ public class HoldingCalculator : IHoldingCalculator {
                                                   - nominalChange * transaction.PriceInEuro / transaction.Security.QuotedPer , 2);
                 break;
         }
-        var realizedLoss = Math.Round(transaction.ExpensesInEuro - (realizedProfitOrLoss < 0 ? realizedProfitOrLoss : 0), 2);
-        var realizedProfit = Math.Round(transaction.IncomeInEuro + (realizedProfitOrLoss > 0 ? realizedProfitOrLoss : 0), 2);
+        double realizedLoss = Math.Round(transaction.ExpensesInEuro - (realizedProfitOrLoss < 0 ? realizedProfitOrLoss : 0), 2);
+        double realizedProfit = Math.Round(transaction.IncomeInEuro + (realizedProfitOrLoss > 0 ? realizedProfitOrLoss : 0), 2);
         holding.NominalBalance = Math.Round(holding.NominalBalance + nominalChange, 2);
         holding.CostValueInEuro = newCostValue;
         holding.RealizedLossInEuro = Math.Round(holding.RealizedLossInEuro + realizedLoss, 2);
