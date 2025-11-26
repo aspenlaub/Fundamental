@@ -303,7 +303,8 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         await SetFoldersIfNecessaryAsync();
 
         await using Context importContext = await ContextFactory.CreateAsync(EnvironmentType);
-        await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, Dumper.TransactionsFileName) });
+        string transactionFileName = Dumper.TransactionsFileName;
+        await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, transactionFileName) });
         var dumper = new Dumper();
         var errorsAndInfos = new ErrorsAndInfos();
         IList<Transaction> transactions = dumper.ReadTransactions(InFolder.FullName, importContext.Securities, errorsAndInfos);
@@ -316,6 +317,8 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         }
 
         if (!transactions.Any()) {
+            transactionFileName = Dumper.TransactionsJsonFileName;
+            await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportingFile, transactionFileName) });
             errorsAndInfos = new ErrorsAndInfos();
             transactions = dumper.ReadTransactionsJson(InFolder.FullName, importContext.Securities, errorsAndInfos);
             if (errorsAndInfos.AnyErrors()) {
@@ -329,9 +332,9 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
 
         if (transactions.Any()) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.ImportResult, transactions.Count, 0) });
-            await SaveImportedTransactionsAsync(Dumper.TransactionsFileName, transactions);
+            await SaveImportedTransactionsAsync(transactionFileName, transactions);
         } else {
-            await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = string.Format(Resources.CouldNotImportFile, Dumper.TransactionsFileName) });
+            await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = string.Format(Resources.CouldNotImportFile, transactionFileName) });
         }
     }
 
