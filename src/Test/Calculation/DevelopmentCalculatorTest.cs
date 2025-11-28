@@ -42,8 +42,8 @@ public class DevelopmentCalculatorTest {
         ];
 
         List<double> changeFactors = [
-            1.1, 1.2, 1.3, 0.7, 1.2, 1.4, 0.24, 1.24, 1.24, 1.7, 0.7, 1,
-            1.2, 1.3, 0.7, 1.2, 1.4, 0.24, 1.24, 1.24, 1.7, 0.7, 1, 1.1
+            1.1, 1.2, 1.3, 0.7, 1.2, 1.4, 0.97, 1.24, 1.24, 1.7, 0.7, 1,
+            1.2, 1.3, 0.7, 1.2, 1.4, 0.97, 1.24, 1.24, 1.7, 0.7, 1, 1.1
         ];
 
         for (int i = 0; i < 20; i++) {
@@ -51,9 +51,10 @@ public class DevelopmentCalculatorTest {
             DateTime newDate = _OtherDates[i];
             IList<Quote> quotes = _Quotes.Where(q => q.Date == oldDate).ToList();
             double changeFactor = changeFactors[i];
-            foreach (Quote quote in quotes) {
-                double priceInEuro = Math.Round(quote.PriceInEuro / changeFactor, 2);
-                Quote newQuote = CreateQuote(quote.Security.SecurityId, priceInEuro, newDate);
+            foreach (var newQuote in
+                        from quote in quotes
+                        let priceInEuro = Math.Round(quote.PriceInEuro / changeFactor, 2)
+                        select CreateQuote(quote.Security.SecurityId, priceInEuro, newDate)) {
                 _Quotes.Add(newQuote);
             }
         }
@@ -85,12 +86,32 @@ public class DevelopmentCalculatorTest {
 
         Assert.IsGreaterThan(14, pickedDates.Count);
     }
+
+    [TestMethod]
+    public void CanRunScenarioWithPickedDate() {
+        DateTime pickedDate = new DateTime(2019, 10, 23);
+        Assert.Contains(pickedDate, _OtherDates);
+        ScenarioResult result = _Sut.CalculateScenario(pickedDate);
+        Assert.IsNotNull(result);
+        IList<Holding> scenarioStartHoldings = result.ScenarioStartHoldings;
+        Assert.IsNotNull(scenarioStartHoldings);
+        Assert.HasCount(3, scenarioStartHoldings);
+        Assert.IsTrue(scenarioStartHoldings.All(h => h.NominalBalance > 0));
+        Assert.IsTrue(scenarioStartHoldings.All(h => h.QuoteValueInEuro > 0));
+        double sum = scenarioStartHoldings.Select(h => h.QuoteValueInEuro).Sum();
+        Assert.AreEqual(830760, sum);
+        IList<Holding> scenarioEndHoldings = result.ScenarioEndHoldings;
+        Assert.IsNotNull(scenarioEndHoldings);
+        Assert.HasCount(3, scenarioEndHoldings);
+        Assert.IsTrue(scenarioEndHoldings.All(h => h.NominalBalance > 0));
+        Assert.IsTrue(scenarioEndHoldings.All(h => h.QuoteValueInEuro > 0));
+        sum = scenarioEndHoldings.Select(h => h.QuoteValueInEuro).Sum();
+        Assert.AreEqual(1832880, sum);
+    }
+
     /*
-    (OK) Nimm zufällig einen Tag aus den letzten 10 Jahren, ausgenommen die letzten x Jahre
-    (REQ) Angenommen an dem Tag hätte das Depot die VMPH Komposition gehabt
-    (REQ) Was wäre der Kurswert x Jahre später gewesen
     (REQ) Errechne durchschnittliches Wachstum oder Verlustrate pro Jahr
-    (REQ) Ergebnis: Minimum, Median, Maximum     
+    (REQ) Ergebnis: Minimum, Median, Maximum
     */
 
     private Security CreateSecurity(string id) {
