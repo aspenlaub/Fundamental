@@ -71,6 +71,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     public void Dispose() {
         Disposed = true;
         Context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public async Task OnLoadedAsync() {
@@ -135,6 +136,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         if (date.Year > 1980) {
             DateInFocus = date;
         }
+
         return DateInFocus;
     }
 
@@ -290,7 +292,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     protected async Task DeleteInertTransactionsAsync() {
         await using Context context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
         var inertTransactions = context.Transactions.Include(t => t.Security).Where(Inert).ToList();
-        if (!inertTransactions.Any()) { return; }
+        if (inertTransactions.Count == 0) { return; }
         foreach (Transaction t in inertTransactions) {
             context.Remove(t);
         }
@@ -307,7 +309,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public bool WasDataEntered() {
-        return SecurityIdsWithDataToSave.Any();
+        return SecurityIdsWithDataToSave.Count != 0;
     }
 
     public async Task<bool> IsThereAnythingToImportAsync() {
@@ -315,7 +317,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     protected async Task DataWasEnteredAsync() {
-        bool anyChanged = SecurityIdsWithDataToSave.Any();
+        bool anyChanged = SecurityIdsWithDataToSave.Count != 0;
         SecurityIdsWithDataToSave.Add(SecurityInFocus.SecurityId);
         if (anyChanged) { return; }
         await Controller.EnableCommandAsync(typeof(SaveCommand));
@@ -323,7 +325,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public async Task DataWasSavedAsync() {
-        if (!SecurityIdsWithDataToSave.Any()) { return; }
+        if (SecurityIdsWithDataToSave.Count == 0) { return; }
         await Controller.DisableCommandAsync(typeof(SaveCommand));
         await Controller.DisableCommandAsync(typeof(UndoCommand));
         SecurityIdsWithDataToSave.Clear();
@@ -346,14 +348,14 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         var dumper = new Dumper();
         var errorsAndInfos = new ErrorsAndInfos();
         IFolder dumpFolder = (await FolderResolver.ResolveAsync("$(MainUserFolder)", errorsAndInfos))
-                             .SubFolder("Fundamental").SubFolder(Enum.GetName(typeof(EnvironmentType), EnvironmentType)).SubFolder("Dump");
+                             .SubFolder("Fundamental").SubFolder(Enum.GetName(EnvironmentType)).SubFolder("Dump");
         if (errorsAndInfos.AnyErrors()) {
             throw new Exception(errorsAndInfos.ErrorsToString());
         }
         dumpFolder.CreateIfNecessary();
-        dumper.DumpSecurities(dumpFolder, Context.Securities.ToList());
-        dumper.DumpTransactions(dumpFolder, Context.Transactions.Where(t => t.Security != null).ToList());
-        dumper.DumpQuotes(dumpFolder, Context.Quotes.ToList());
+        dumper.DumpSecurities(dumpFolder, [.. Context.Securities]);
+        dumper.DumpTransactions(dumpFolder, [.. Context.Transactions.Where(t => t.Security != null)]);
+        dumper.DumpQuotes(dumpFolder, [.. Context.Quotes]);
     }
 
     public bool IsSecurityInFocus() {
@@ -373,12 +375,47 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         Context.Add(transaction);
     }
 
-    public bool ShowLogEntry(LogEntry _) {
-        return true;
-    }
-
     public ObservableCollection<LogEntry> LogEntries() {
         return _LogEntries;
+    }
+
+    public IList<string> CalculateScenarios() {
+        DevelopmentCalculator developmentCalculator = new DevelopmentCalculator()
+            .WithHoldings([.. Context.Holdings.ToList().Where(h => h.Date <= DateInFocus)])
+            .WithQuotes([.. Context.Quotes.ToList().Where(q => q.Date <= DateInFocus)]);
+        ScenariosResult scenariosResult = developmentCalculator.CalculateScenariosToFixedPoint();
+        DateTime date = developmentCalculator.HoldingDate;
+        var holdings = Context.Holdings.ToList().Where(h => h.Date == date).ToList();
+        double quoteValueSum = holdings.Sum(h => h.QuoteValueInEuro);
+
+        List<string> messages = [
+            string.Format(Properties.Resources.ScenariosResultGrowthLogEntry,
+                          DateInFocus.ToShortDateString(),
+                          ToPercent(scenariosResult.MinimumAverageYearlyChangeFactor),
+                          ToPercent(scenariosResult.MedianAverageYearlyChangeFactor),
+                          ToPercent(scenariosResult.MaximumAverageYearlyChangeFactor)),
+            string.Format(Properties.Resources.ScenariosResultPredictedAmountsLogEntry,
+                          DateInFocus.ToShortDateString(),
+                          ToPredictedAmount(quoteValueSum, scenariosResult.MinimumAverageYearlyChangeFactor),
+                          ToPredictedAmount(quoteValueSum, scenariosResult.MedianAverageYearlyChangeFactor),
+                          ToPredictedAmount(quoteValueSum, scenariosResult.MaximumAverageYearlyChangeFactor))
+        ];
+
+        return messages;
+    }
+
+    public void LogScenariosResult(IList<string> messages) {
+        foreach (string message in messages) {
+            AddLogEntry("Information", message);
+        }
+    }
+
+    private static double ToPredictedAmount(double quoteValueSum, double yearlyChangeFactor) {
+        return Math.Round(quoteValueSum * (yearlyChangeFactor - 1), 0);
+    }
+
+    private static double ToPercent(double changeFactor) {
+        return Math.Round(100 * (changeFactor - 1), 2);
     }
 
     public void AddLogEntry(string logType, string logMessage) {

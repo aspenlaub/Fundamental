@@ -65,17 +65,17 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         DateTime? date = await ReadDateInFileNameAsync(shortFileName);
         if (date == null) { return; }
 
-        var fileContents = (await File.ReadAllLinesAsync(fileName, Encoding.UTF8)).ToList();
+        List<string> fileContents = [.. await File.ReadAllLinesAsync(fileName, Encoding.UTF8)];
         if (fileContents.Count < 2) {
             await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogError, Message = Resources.FileTooSmall });
             return;
         }
 
-        var row = fileContents[0].Split(separator).ToList();
+        List<string> row = [.. fileContents[0].Split(separator)];
         int indexCurrency = KeyWordIndexSync(Resources.BankStatement_Currency, row);
         if (indexCurrency < 0) {
-            fileContents = (await File.ReadAllLinesAsync(fileName, Encoding.GetEncoding("ISO-8859-1"))).ToList();
-            row = fileContents[0].Split(separator).ToList();
+            fileContents = [.. await File.ReadAllLinesAsync(fileName, Encoding.GetEncoding("ISO-8859-1"))];
+            row = [.. fileContents[0].Split(separator)];
         }
 
         int indexNominal = await KeyWordIndexAsync(Resources.BankStatement_Nominal, row);
@@ -91,7 +91,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         uint successes = 0, failures = 0;
         var quotes = new List<Quote>();
         foreach (string s in fileContents) {
-            row = s.Split(separator).ToList();
+            row = [.. s.Split(separator)];
             if (row.Count >= indexId && row[indexId].Length == 0 && row.Count >= indexName && row[indexName].Contains(Resources.BankStatement_BankAccount)) {
                 continue;
             }
@@ -147,7 +147,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
     }
 
     protected async Task SaveImportedQuotesAsync(string shortFileName, uint failures, IList<Quote> quotes) {
-        var securityIdsWithDataToSave = new HashSet<string>();
+        HashSet<string> securityIdsWithDataToSave = [];
         await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.WriteImportedQuotes, shortFileName) });
         uint addedQuotes = 0, updatedQuotes = 0;
         await using (Context importContext = await ContextFactory.CreateAsync(EnvironmentType)) {
@@ -180,9 +180,9 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
             }
 
             importContext.SaveChanges();
-            var holdingDates = importContext.Holdings.Select(x => x.Date).Distinct().ToList();
-            var quoteDatesWithoutHoldings = importContext.Quotes.Select(x => x.Date).Distinct().ToList();
-            quoteDatesWithoutHoldings = quoteDatesWithoutHoldings.Where(x => !holdingDates.Contains(x)).ToList();
+            List<DateTime> holdingDates = [.. importContext.Holdings.Select(x => x.Date).Distinct()];
+            List<DateTime> quoteDatesWithoutHoldings = [.. importContext.Quotes.Select(x => x.Date).Distinct()];
+            quoteDatesWithoutHoldings = [.. quoteDatesWithoutHoldings.Where(x => !holdingDates.Contains(x))];
             foreach (DateTime quoteDateWithoutHoldings in quoteDatesWithoutHoldings) {
                 foreach (Security security in importContext.Quotes.Where(x => quoteDateWithoutHoldings == x.Date).Select(x => x.Security)) {
                     securityIdsWithDataToSave.Add(security.SecurityId);
@@ -209,26 +209,25 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
 
     }
 
-    private static bool ReadNominalAndPrice(IReadOnlyList<string> row, int indexNominal, int indexQuote, int indexQuoteValue, out double nominal, out double price, out double quoteValue) {
+    private static bool ReadNominalAndPrice(List<string> row, int indexNominal, int indexQuote, int indexQuoteValue, out double nominal, out double price, out double quoteValue) {
         price = -1;
         quoteValue = -1;
         return double.TryParse(row[indexNominal], out nominal) && double.TryParse(row[indexQuote], out price) && double.TryParse(row[indexQuoteValue], out quoteValue);
     }
 
     private async Task<DateTime?> ReadDateInFileNameAsync(string shortFileName) {
-        var indices = shortFileName
-                      .Select((c, i) => new { c, i })
-                      .Where(x => x.c == '_')
-                      .Select(x => x.i + 1)
-                      .ToList();
+        List<int> indices = [.. shortFileName
+                            .Select((c, i) => new { c, i })
+                            .Where(x => x.c == '_')
+                            .Select(x => x.i + 1)];
         foreach(int index in indices) {
             if (index + 8 >= shortFileName.Length) {
                 continue;
             }
 
-            if (int.TryParse(shortFileName.Substring(index, 4), out int year)
-                && int.TryParse(shortFileName.Substring(index + 4, 2), out int month)
-                && int.TryParse(shortFileName.Substring(index + 6, 2), out int day)) {
+            if (int.TryParse(shortFileName.AsSpan(index, 4), out int year)
+                && int.TryParse(shortFileName.AsSpan(index + 4, 2), out int month)
+                && int.TryParse(shortFileName.AsSpan(index + 6, 2), out int day)) {
                 return new DateTime(year, month, day);
             }
         }
@@ -240,7 +239,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         return null;
     }
 
-    private int KeyWordIndexSync(string keyWord, IList<string> row) {
+    private static int KeyWordIndexSync(string keyWord, IList<string> row) {
         return row.IndexOf(keyWord);
     }
 
@@ -339,7 +338,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
     }
 
     protected async Task SaveImportedTransactionsAsync(string shortFileName, IList<Transaction> transactions) {
-        var securityIdsWithDataToSave = new HashSet<string>();
+        HashSet<string> securityIdsWithDataToSave = [];
         await ExecutionContext.ReportAsync(new FeedbackToApplication { Type = FeedbackType.LogInformation, Message = string.Format(Resources.WriteImportedTransactions, shortFileName) });
         uint addedTransactions = 0, updatedTransactions = 0;
         await using (Context importContext = await ContextFactory.CreateAsync(EnvironmentType)) {
@@ -386,7 +385,7 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
         if (InFolder != null) { return; }
 
         var errorsAndInfos = new ErrorsAndInfos();
-        IFolder folder = (await FolderResolver.ResolveAsync("$(MainUserFolder)", errorsAndInfos)).SubFolder("Fundamental").SubFolder(Enum.GetName(typeof(EnvironmentType), EnvironmentType));
+        IFolder folder = (await FolderResolver.ResolveAsync("$(MainUserFolder)", errorsAndInfos)).SubFolder("Fundamental").SubFolder(Enum.GetName(EnvironmentType));
         if (errorsAndInfos.AnyErrors()) {
             throw new Exception(errorsAndInfos.ErrorsToString());
         }

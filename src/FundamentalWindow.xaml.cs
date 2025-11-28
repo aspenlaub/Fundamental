@@ -22,8 +22,6 @@ using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 using Autofac;
 using IContainer = Autofac.IContainer;
 
-#pragma warning disable 4014
-
 // ReSharper disable once UnusedMember.Global
 // ReSharper disable AsyncVoidEventHandlerMethod
 
@@ -37,6 +35,7 @@ public partial class FundamentalWindow {
     public bool ReadyToUse { get; private set; }
     private readonly ISimpleLogger _SimpleLogger;
     private readonly IMethodNamesFromStackFramesExtractor _MethodNamesFromStackFramesExtractor;
+    private readonly BackgroundWorker _BackgroundWorker = new BackgroundWorker();
 
     public FundamentalWindow() : this(Context.DefaultEnvironmentType) { }
 
@@ -60,6 +59,8 @@ public partial class FundamentalWindow {
         RelativeSummaryChart.Application = _FundamentalApplication;
         RelativeSummaryChart.UniqueChartNumber = (uint)Charts.RelativeSummary;
         RelativeSummaryChart.Title = Properties.Resources.RelativeSummaryChartTitle;
+        _BackgroundWorker.DoWork += DoBackgroundWork;
+        _BackgroundWorker.RunWorkerCompleted += OnRunWorkerCompleted;
     }
 
     private async void Window_LoadedAsync(object sender, RoutedEventArgs e) {
@@ -112,11 +113,16 @@ public partial class FundamentalWindow {
         _FundamentalViewSources.HoldingPerDateViewSource.View.Refresh();
     }
 
-    private void dateSummaryDataGrid_CurrentCellChanged(object sender, EventArgs e) {
+    private void DateSummaryDataGrid_CurrentCellChanged(object sender, EventArgs e) {
         var dateSummary = DateSummaryDataGrid.CurrentCell.Item as DateSummary;
         if (dateSummary == null) { return; }
 
         FocusOnDate(dateSummary.Date);
+        if (_BackgroundWorker.IsBusy) {
+            return;
+        }
+
+        _BackgroundWorker.RunWorkerAsync();
     }
 
     private void HoldingPerDateViewSource_Filter(object sender, FilterEventArgs e) {
@@ -244,7 +250,7 @@ public partial class FundamentalWindow {
         _ResetStatusInformationAfter = text.Length == 0 ? DateTime.Now.AddHours(1) : DateTime.Now.AddSeconds(10);
     }
 
-    private void SetViewSource<T>(CollectionViewSource source, ObservableCollection<T> collection, string sortProperty, ListSortDirection sortDirection) {
+    private static void SetViewSource<T>(CollectionViewSource source, ObservableCollection<T> collection, string sortProperty, ListSortDirection sortDirection) {
         source.Source = collection;
         source.SortDescriptions.Clear();
         source.SortDescriptions.Add(new SortDescription(sortProperty, sortDirection));
@@ -302,6 +308,14 @@ public partial class FundamentalWindow {
     }
 
     private void LogViewSource_Filter(object sender, FilterEventArgs e) {
-        e.Accepted = _FundamentalApplication.ShowLogEntry(e.Item as LogEntry);
+        e.Accepted = true;
+    }
+
+    private void DoBackgroundWork(object sender, DoWorkEventArgs e) {
+        e.Result = _FundamentalApplication.CalculateScenarios();
+    }
+
+    private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+        _FundamentalApplication.LogScenariosResult(e.Result as IList<string>);
     }
 }

@@ -273,4 +273,10 @@
   <data name="DateCouldNotBeExtractedFromFileName" xml:space="preserve">
     <value>Date could not be extracted from file name</value>
   </data>
+  <data name="ScenariosResultGrowthLogEntry" xml:space="preserve">
+    <value>Average yearly growth on {0} is {1}% (min), {2}% (med), {3}% (max)</value>
+  </data>
+  <data name="ScenariosResultPredictedAmountsLogEntry" xml:space="preserve">
+    <value>Predicted yearly growth on {0} is {1}€ (min), {2}€ (med), {3}€ (max)</value>
+  </data>
 </root>

@@ -376,6 +376,24 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Average yearly growth on {0} is {1}% (min), {2}% (med), {3}% (max).
+        /// </summary>
+        internal static string ScenariosResultGrowthLogEntry {
+            get {
+                return ResourceManager.GetString("ScenariosResultGrowthLogEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Predicted yearly growth on {0} is {1}€ (min), {2}€ (med), {3}€ (max).
+        /// </summary>
+        internal static string ScenariosResultPredictedAmountsLogEntry {
+            get {
+                return ResourceManager.GetString("ScenariosResultPredictedAmountsLogEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kursfaktor.
         /// </summary>
         internal static string Securities_Dump_QuotedPer {

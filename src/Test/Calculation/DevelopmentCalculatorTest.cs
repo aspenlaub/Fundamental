@@ -49,9 +49,9 @@ public class DevelopmentCalculatorTest {
         for (int i = 0; i < 20; i++) {
             DateTime oldDate = i == 0 ? _Date2025 : _OtherDates[i - 1];
             DateTime newDate = _OtherDates[i];
-            IList<Quote> quotes = _Quotes.Where(q => q.Date == oldDate).ToList();
+            IList<Quote> quotes = [.. _Quotes.Where(q => q.Date == oldDate)];
             double changeFactor = changeFactors[i];
-            foreach (var newQuote in
+            foreach (Quote newQuote in
                         from quote in quotes
                         let priceInEuro = Math.Round(quote.PriceInEuro / changeFactor, 2)
                         select CreateQuote(quote.Security.SecurityId, priceInEuro, newDate)) {
@@ -69,7 +69,7 @@ public class DevelopmentCalculatorTest {
 
     [TestMethod]
     public void HaveQuotesWithDistinctDates() {
-        IList<DateTime> dates = _Quotes.Select(q => q.Date).Distinct().ToList();
+        IList<DateTime> dates = [.. _Quotes.Select(q => q.Date).Distinct()];
         Assert.HasCount(21, dates);
     }
 
@@ -84,37 +84,58 @@ public class DevelopmentCalculatorTest {
             pickedDates.Add(date);
         }
 
-        Assert.IsGreaterThan(14, pickedDates.Count);
+        Assert.HasCount(8, pickedDates);
     }
 
     [TestMethod]
     public void CanRunScenarioWithPickedDate() {
-        DateTime pickedDate = new DateTime(2019, 10, 23);
+        var pickedDate = new DateTime(2019, 10, 23);
         Assert.Contains(pickedDate, _OtherDates);
-        ScenarioResult result = _Sut.CalculateScenario(pickedDate);
-        Assert.IsNotNull(result);
-        IList<Holding> scenarioStartHoldings = result.ScenarioStartHoldings;
+        ScenarioResult scenarioResult = _Sut.CalculateScenario(pickedDate);
+        Assert.IsNotNull(scenarioResult);
+        IList<Holding> scenarioStartHoldings = scenarioResult.ScenarioStartHoldings;
         Assert.IsNotNull(scenarioStartHoldings);
         Assert.HasCount(3, scenarioStartHoldings);
         Assert.IsTrue(scenarioStartHoldings.All(h => h.NominalBalance > 0));
         Assert.IsTrue(scenarioStartHoldings.All(h => h.QuoteValueInEuro > 0));
-        double sum = scenarioStartHoldings.Select(h => h.QuoteValueInEuro).Sum();
+        double sum = scenarioResult.SumStart();
         Assert.AreEqual(830760, sum);
-        IList<Holding> scenarioEndHoldings = result.ScenarioEndHoldings;
+        IList<Holding> scenarioEndHoldings = scenarioResult.ScenarioEndHoldings;
         Assert.IsNotNull(scenarioEndHoldings);
         Assert.HasCount(3, scenarioEndHoldings);
         Assert.IsTrue(scenarioEndHoldings.All(h => h.NominalBalance > 0));
         Assert.IsTrue(scenarioEndHoldings.All(h => h.QuoteValueInEuro > 0));
-        sum = scenarioEndHoldings.Select(h => h.QuoteValueInEuro).Sum();
+        sum = scenarioResult.SumEnd();
         Assert.AreEqual(1832880, sum);
+        double averageYearlyChangeFactor = scenarioResult.AverageYearlyChangeFactor();
+        Assert.AreEqual(1.1714714016774219, averageYearlyChangeFactor);
     }
 
-    /*
-    (REQ) Errechne durchschnittliches Wachstum oder Verlustrate pro Jahr
-    (REQ) Ergebnis: Minimum, Median, Maximum
-    */
+    [TestMethod]
+    public void CanMultipleScenariosAndGetMinimumMedianAndMaximum() {
+        IList<DateTime> pickedDates = [
+            new(2019, 10, 23), new(2018, 8, 15), new(2017, 6, 7)
+        ];
+        Assert.IsTrue(pickedDates.All(_OtherDates.Contains));
 
-    private Security CreateSecurity(string id) {
+        ScenariosResult scenariosResult = _Sut.CalculateScenarios(pickedDates);
+        Assert.AreEqual(1.1714714016774219, scenariosResult.MinimumAverageYearlyChangeFactor);
+        Assert.AreEqual(1.2441153613307703, scenariosResult.MedianAverageYearlyChangeFactor);
+        Assert.AreEqual(1.3112460931755978, scenariosResult.MaximumAverageYearlyChangeFactor);
+    }
+
+    [TestMethod]
+    public void CanMultipleScenariosToFixedPoint() {
+        ScenariosResult scenariosResult = _Sut.CalculateScenariosToFixedPoint();
+        int numberOfDistinctChangeFactors = scenariosResult.NumberOfDistinctChangeFactors();
+        Assert.IsGreaterThanOrEqualTo(8, numberOfDistinctChangeFactors);
+        Assert.AreEqual(1.1222066946663809, scenariosResult.MinimumAverageYearlyChangeFactor);
+        Assert.AreEqual(1.3112460931755978, scenariosResult.MaximumAverageYearlyChangeFactor);
+        Assert.IsGreaterThan(scenariosResult.MinimumAverageYearlyChangeFactor, scenariosResult.MedianAverageYearlyChangeFactor);
+        Assert.IsGreaterThan(scenariosResult.MedianAverageYearlyChangeFactor, scenariosResult.MaximumAverageYearlyChangeFactor);
+    }
+
+    private static Security CreateSecurity(string id) {
         return new Security { Guid = Guid.NewGuid().ToString(), QuotedPer = 1, SecurityId = id, SecurityName = id };
     }
 
