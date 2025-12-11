@@ -36,6 +36,7 @@ public partial class FundamentalWindow {
     private readonly ISimpleLogger _SimpleLogger;
     private readonly IMethodNamesFromStackFramesExtractor _MethodNamesFromStackFramesExtractor;
     private readonly BackgroundWorker _BackgroundWorker = new BackgroundWorker();
+    private int _SeenLogMessages ;
 
     public FundamentalWindow() : this(Context.DefaultEnvironmentType) { }
 
@@ -139,6 +140,8 @@ public partial class FundamentalWindow {
 
         string tabItemName = selectedItem.Name;
         await ExecuteRefreshChartCommandsForTabAsync(tabItemName);
+
+        UpdateLogTabHeader();
     }
 
     private async void OnWindowSizeChangedAsync(object sender, SizeChangedEventArgs e) {
@@ -164,18 +167,21 @@ public partial class FundamentalWindow {
                 case FeedbackType.LogInformation: {
                     _SimpleLogger.LogInformationWithCallStack(feedback.Message, methodNamesFromStack);
                     _FundamentalApplication.AddLogEntry("Information", feedback.Message);
+                    UpdateLogTabHeader();
                 }
                     break;
                 case FeedbackType.LogWarning: {
                     _SimpleLogger.LogWarningWithCallStack(feedback.Message, methodNamesFromStack);
                     _FundamentalApplication.AddLogEntry("Warning", feedback.Message);
+                    UpdateLogTabHeader();
                 }
-                    break;
+                break;
                 case FeedbackType.LogError: {
                     _SimpleLogger.LogErrorWithCallStack(feedback.Message, methodNamesFromStack);
                     _FundamentalApplication.AddLogEntry("Error", feedback.Message);
+                    UpdateLogTabHeader();
                 }
-                    break;
+                break;
                 case FeedbackType.CommandIsDisabled: {
                     _SimpleLogger.LogErrorWithCallStack("Attempt to run disabled command " + feedback.CommandType, methodNamesFromStack);
                 }
@@ -317,5 +323,17 @@ public partial class FundamentalWindow {
 
     private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
         _FundamentalApplication.LogScenariosResult(e.Result as IList<string>);
+        UpdateLogTabHeader();
+    }
+
+    private void UpdateLogTabHeader() {
+        int number = _FundamentalApplication.LogEntries().Count;
+        if (LogTab.IsSelected) {
+            _SeenLogMessages = number;
+        } else if (_SeenLogMessages > number) {
+            _SeenLogMessages = 0;
+        }
+        string header = number > _SeenLogMessages ? $"LOG ({number - _SeenLogMessages} new)" : "LOG";
+        LogTab.Header = header;
     }
 }
