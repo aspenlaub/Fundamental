@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Fundamental.csproj" />
+  <Project Path="Model/Fundamental.Model.csproj" />
+  <Project Path="Test/Fundamental.Test.csproj" />
+</Solution>
