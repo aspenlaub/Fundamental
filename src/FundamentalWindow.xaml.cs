@@ -42,7 +42,7 @@ public partial class FundamentalWindow {
 
     public FundamentalWindow(EnvironmentType environmentType) {
         SynchronizationContext uiSynchronizationContext = SynchronizationContext.Current;
-        IContainer container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
+        IContainer container = new ContainerBuilder().UsePegh("Fundamental").Build();
         ReadyToUse = false;
         _ResetStatusInformationAfter = DateTime.Now;
         InitializeComponent();

@@ -25,11 +25,11 @@ public class WhenWorkingWithFundamentalApplication {
 
     public WhenWorkingWithFundamentalApplication(IContextFactory contextFactory) {
         ContextFactory = contextFactory;
-        Container = new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
+        Container = new ContainerBuilder().UsePegh("Fundamental").Build();
         Controller = new ApplicationCommandController(Container.Resolve<ISimpleLogger>(), HandleFeedbackToApplicationAsync);
     }
 
-    public async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedbackToApplication) {
+    public static async Task HandleFeedbackToApplicationAsync(IFeedbackToApplication feedbackToApplication) {
         await Task.CompletedTask;
     }
 

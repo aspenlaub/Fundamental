@@ -29,7 +29,7 @@ public class ImporterTest {
         Helper = new TestHelper(ContextFactory);
         await Helper.PopulateDatabaseWithTestRepositoryDataAsync();
         var executionContext = new FakeCommandExecutionContext();
-        Container =new ContainerBuilder().UsePegh("Fundamental", new DummyCsArgumentPrompter()).Build();
+        Container =new ContainerBuilder().UsePegh("Fundamental").Build();
         Importer = new Importer(EnvironmentType.UnitTest, executionContext, Container.Resolve<IFolderResolver>(), ContextFactory);
     }
 
