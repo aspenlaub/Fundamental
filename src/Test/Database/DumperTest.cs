@@ -7,9 +7,10 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Components;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Seoa.Extensions;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Entities;
 using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -77,9 +78,9 @@ internal class DumperTestExecutionContext : IDisposable {
         Dumper = new Dumper();
         var errorsAndInfos = new ErrorsAndInfos();
         MasterFolder = folderResolver.ResolveAsync(@"$(GitHub)\Fundamental\src\Test\Application", errorsAndInfos).Result;
-        Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
+        Assert.That.ThereWereNoErrors(errorsAndInfos);
         DumpFolder = folderResolver.ResolveAsync(@"$(GitHub)\Fundamental\src\Test\Application\Temp\", errorsAndInfos).Result;
-        Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
+        Assert.That.ThereWereNoErrors(errorsAndInfos);
         if (DumpFolder.Exists()) {
             new FolderDeleter().DeleteFolder(DumpFolder);
         }

@@ -8,6 +8,7 @@ using System.Text.Json;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Properties;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Core;
 using Microsoft.EntityFrameworkCore;
 

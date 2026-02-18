@@ -10,9 +10,10 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces.Application;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Properties;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Entities;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Application;
 using Aspenlaub.Net.GitHub.CSharp.Vishizhukel.Interfaces.Application;
 

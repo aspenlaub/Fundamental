@@ -7,9 +7,9 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Components;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Entities;
-using Aspenlaub.Net.GitHub.CSharp.Pegh.Extensions;
 using Aspenlaub.Net.GitHub.CSharp.Pegh.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Seoa.Extensions;
+using Aspenlaub.Net.GitHub.CSharp.Skladasu.Entities;
 using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -78,13 +78,13 @@ public class ImporterTest {
     private async Task ImportQuotesAsync() {
         var errorsAndInfos = new ErrorsAndInfos();
         var folder = (await Container.Resolve<IFolderResolver>().ResolveAsync(@"$(GitHub)\Fundamental\src\Test\Application", errorsAndInfos)).FullName + "\\";
-        Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
+        Assert.That.ThereWereNoErrors(errorsAndInfos);
         var directoryInfo = new DirectoryInfo(folder);
         var files = directoryInfo.GetFiles('*' + _bankStatementInfix + "*.csv").ToList();
         Assert.HasCount(1, files);
         var file = files[0];
         var inFolder = (await Container.Resolve<IFolderResolver>().ResolveAsync(@"$(MainUserFolder)\Fundamental\UnitTest\In", errorsAndInfos)).FullName + "\\";
-        Assert.IsFalse(errorsAndInfos.AnyErrors(), errorsAndInfos.ErrorsToString());
+        Assert.That.ThereWereNoErrors(errorsAndInfos);
         File.Copy(file.FullName, inFolder + file.Name, true);
         await Importer.ImportBankStatementAsync(file.Name);
     }
