@@ -380,13 +380,23 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         return _LogEntries;
     }
 
+    private async Task<Context> CreateSeparateContext() {
+        Context context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
+        await context.Securities.LoadAsync();
+        await context.Transactions.LoadAsync();
+        await context.Holdings.LoadAsync();
+        await context.DateSummaries.LoadAsync();
+        return context;
+    }
+
     public IList<string> CalculateScenarios() {
+        Context context = CreateSeparateContext().Result;
         DevelopmentCalculator developmentCalculator = new DevelopmentCalculator()
-            .WithHoldings([.. Context.Holdings.ToList().Where(h => h.Date <= DateInFocus)])
-            .WithQuotes([.. Context.Quotes.ToList().Where(q => q.Date <= DateInFocus)]);
+          .WithHoldings([.. context.Holdings.ToList().Where(h => h.Date <= DateInFocus)])
+          .WithQuotes([.. context.Quotes.ToList().Where(q => q.Date <= DateInFocus)]);
         ScenariosResult scenariosResult = developmentCalculator.CalculateScenariosToFixedPoint();
         DateTime date = developmentCalculator.HoldingDate;
-        var holdings = Context.Holdings.ToList().Where(h => h.Date == date).ToList();
+        var holdings = context.Holdings.ToList().Where(h => h.Date == date).ToList();
         double quoteValueSum = holdings.Sum(h => h.QuoteValueInEuro);
 
         List<string> messages = [

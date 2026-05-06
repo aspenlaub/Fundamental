@@ -67,10 +67,8 @@ public class DevelopmentCalculator {
 
     public ScenariosResult CalculateScenarios(IList<DateTime> pickedDates) {
         ScenariosResult scenariosResult = new();
-        foreach (DateTime pickedDate in pickedDates) {
-            ScenarioResult scenarioResult = CalculateScenario(pickedDate);
+        foreach (ScenarioResult scenarioResult in pickedDates.Select(CalculateScenario)) {
             scenariosResult.Add(scenarioResult.AverageYearlyChangeFactor());
-
         }
 
         return scenariosResult;
