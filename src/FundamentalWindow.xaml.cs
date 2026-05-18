@@ -317,8 +317,8 @@ public partial class FundamentalWindow {
         e.Accepted = true;
     }
 
-    private void DoBackgroundWork(object sender, DoWorkEventArgs e) {
-        e.Result = _FundamentalApplication.CalculateScenarios();
+    private async void DoBackgroundWork(object sender, DoWorkEventArgs e) {
+        e.Result = await _FundamentalApplication.CalculateScenariosAsync();
     }
 
     private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {

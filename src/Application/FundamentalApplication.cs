@@ -380,7 +380,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         return _LogEntries;
     }
 
-    private async Task<Context> CreateSeparateContext() {
+    private async Task<Context> CreateSeparateContextAsync() {
         Context context = await ContextFactory.CreateAsync(EnvironmentType, UiSynchronizationContext);
         await context.Securities.LoadAsync();
         await context.Transactions.LoadAsync();
@@ -389,8 +389,8 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
         return context;
     }
 
-    public IList<string> CalculateScenarios() {
-        Context context = CreateSeparateContext().Result;
+    public async Task<IList<string>> CalculateScenariosAsync() {
+        Context context = await CreateSeparateContextAsync();
         DevelopmentCalculator developmentCalculator = new DevelopmentCalculator()
           .WithHoldings([.. context.Holdings.ToList().Where(h => h.Date <= DateInFocus)])
           .WithQuotes([.. context.Quotes.ToList().Where(q => q.Date <= DateInFocus)]);
