@@ -210,7 +210,8 @@ public class Importer(EnvironmentType environmentType, IApplicationCommandExecut
 
     }
 
-    private static bool ReadNominalAndPrice(List<string> row, int indexNominal, int indexQuote, int indexQuoteValue, out double nominal, out double price, out double quoteValue) {
+    private static bool ReadNominalAndPrice(IReadOnlyList<string> row, int indexNominal, int indexQuote, int indexQuoteValue,
+            out double nominal, out double price, out double quoteValue) {
         price = -1;
         quoteValue = -1;
         return double.TryParse(row[indexNominal], out nominal) && double.TryParse(row[indexQuote], out price) && double.TryParse(row[indexQuoteValue], out quoteValue);
