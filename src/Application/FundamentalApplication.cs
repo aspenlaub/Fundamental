@@ -416,7 +416,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     public void LogScenariosResult(IList<string> messages) {
-        foreach (string message in messages) {
+        foreach (string message in messages ?? []) {
             AddLogEntry("Information", message);
         }
     }
