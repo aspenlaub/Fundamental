@@ -2,7 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+    <AssetTargetFallback>net10.0</AssetTargetFallback>
+<LangVersion>latest</LangVersion>
     <RootNamespace>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</RootNamespace>
     <AssemblyName>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyName>
     <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
