@@ -19,6 +19,7 @@
     <TargetFrameworkProfile />
     <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
     <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <MSBuildEnableWorkloadResolver>false</MSBuildEnableWorkloadResolver>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
