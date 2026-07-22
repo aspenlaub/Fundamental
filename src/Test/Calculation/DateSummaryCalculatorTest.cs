@@ -6,7 +6,7 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [assembly: DoNotParallelize]
-namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
+namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Calculation;
 
 [TestClass]
 public class DateSummaryCalculatorTest {

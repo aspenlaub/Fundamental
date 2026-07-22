@@ -103,7 +103,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     protected void RefreshSummaryChartData() {
         foreach (DateSummary summary in Context.DateSummaries.Local) {
             SummaryChartSource.AddPoint(summary.Date, summary.QuoteValueInEuro);
-            if (Math.Abs(summary.CostValueInEuro) < 0.001) { continue; }
+            if (Math.Abs(summary.CostValueInEuro) < Constants.ZeroLimit) { continue; }
             RelativeSummaryChartSource.AddPoint(summary.Date, Math.Round(100 * summary.QuoteValueInEuro / summary.CostValueInEuro, 1));
         }
     }
@@ -205,7 +205,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
             case (uint)Charts.HoldingsPerSecurity: {
                 if (SecurityInFocus == null) { return; }
                 HoldingsPerSecurityChartSource.Clear();
-                foreach (Holding holding in Context.Holdings.Local.Where(x => x.Security != null && x.Security.SecurityId == SecurityInFocus.SecurityId && Math.Abs(x.NominalBalance) > 0.001)) {
+                foreach (Holding holding in Context.Holdings.Local.Where(x => x.Security != null && x.Security.SecurityId == SecurityInFocus.SecurityId && Math.Abs(x.NominalBalance) > Constants.ZeroLimit)) {
                     HoldingsPerSecurityChartSource.AddPoint(holding.Date, holding.QuoteValueInEuro);
                 }
             }
@@ -301,7 +301,7 @@ public class FundamentalApplication : IDisposable, IRefreshContext, IRefreshChar
     }
 
     private static bool Inert(Transaction t) {
-        return Math.Abs(t.Nominal) < 0.001 && Math.Abs(t.IncomeInEuro) < 0.001 && Math.Abs(t.ExpensesInEuro) < 0.001 || t.Security == null;
+        return Math.Abs(t.Nominal) < Constants.ZeroLimit && Math.Abs(t.IncomeInEuro) < Constants.ZeroLimit && Math.Abs(t.ExpensesInEuro) < Constants.ZeroLimit || t.Security == null;
     }
 
     public async Task UndoAsync() {

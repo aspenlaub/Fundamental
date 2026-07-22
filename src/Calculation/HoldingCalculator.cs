@@ -31,7 +31,7 @@ public class HoldingCalculator : IHoldingCalculator {
     }
 
     protected void SortHoldings() {
-        Holdings = Holdings.OrderBy(x => x.Security.SecurityId).ThenBy(x => x.Date).ToList();
+        Holdings = [.. Holdings.OrderBy(x => x.Security.SecurityId).ThenBy(x => x.Date)];
     }
 
     protected void UpdateHoldingsWithQuote(Quote quote) {
@@ -42,27 +42,27 @@ public class HoldingCalculator : IHoldingCalculator {
         foreach(Transaction transaction in transactions) {
             AddTransactionToHoldingWithQuote(transaction, holding, quote);
         }
-        if (Math.Abs(holding.NominalBalance) > 0.001) { return; }
+        if (Math.Abs(holding.NominalBalance) > Constants.ZeroLimit) { return; }
         Holding nextHolding = HoldingForQuote(quote, HoldingForQuoteModes.Next);
-        if (nextHolding != null && Math.Abs(nextHolding.NominalBalance) > 0.001) { return; }
+        if (nextHolding != null && Math.Abs(nextHolding.NominalBalance) > Constants.ZeroLimit) { return; }
         if (nextHolding == null) {
             Holding lastHolding = HoldingForQuote(quote, HoldingForQuoteModes.LastBefore);
-            if (lastHolding != null && Math.Abs(lastHolding.NominalBalance) > 0.001) { return; }
+            if (lastHolding != null && Math.Abs(lastHolding.NominalBalance) > Constants.ZeroLimit) { return; }
         }
         Holdings.Remove(holding);
     }
 
     protected void SortTransactions() {
-        Transactions = Transactions.OrderBy(SortValue).ToList();
+        Transactions = [.. Transactions.OrderBy(SortValue)];
     }
 
-    public string SortValue(Transaction transaction) {
+    public static string SortValue(Transaction transaction) {
         string s = transaction.Date.ToString("yyyyMMdd") + transaction.Security.SecurityId + (transaction.TransactionType == TransactionType.Sell ? '0' : '1');
         return s;
     }
 
     protected IList<Transaction> TransactionsForQuote(Quote quote) {
-        return Transactions.Where(x => x.Security == quote.Security && x.Date <= quote.Date).ToList();
+        return [.. Transactions.Where(x => x.Security == quote.Security && x.Date <= quote.Date)];
     }
 
     protected enum HoldingForQuoteModes {
@@ -73,8 +73,11 @@ public class HoldingCalculator : IHoldingCalculator {
         DateTime date;
         switch (mode) {
             case HoldingForQuoteModes.LastBefore : {
-                if (!Holdings.Any(x => x.Security == quote.Security && x.Date < quote.Date)) { return null; }
-                date = Holdings.Where(x => x.Security == quote.Security && x.Date < quote.Date).Max(x => x.Date);
+                var precedingHoldings = Holdings.Where(x => x.Security == quote.Security && x.Date < quote.Date).ToList();
+                if (precedingHoldings.Count == 0) { return null; }
+
+                var notEmptyHoldings = precedingHoldings.Where(x => x.NominalBalance > Constants.ZeroLimit).ToList();
+                date = notEmptyHoldings.Count != 0 ? notEmptyHoldings.Max(x => x.Date) : precedingHoldings.Max(x => x.Date);
             }
                 break;
             case HoldingForQuoteModes.Same : {
@@ -99,7 +102,7 @@ public class HoldingCalculator : IHoldingCalculator {
         return holding;
     }
 
-    protected void AddTransactionToHoldingWithQuote(Transaction transaction, Holding holding, Quote quote) {
+    protected static void AddTransactionToHoldingWithQuote(Transaction transaction, Holding holding, Quote quote) {
         int transactionSign = transaction.TransactionType == TransactionType.Buy ? 1 : transaction.TransactionType == TransactionType.Sell ? -1 : 0;
         double nominalChange = transaction.Nominal * transactionSign;
         double newCostValue = holding.CostValueInEuro;

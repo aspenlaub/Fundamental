@@ -85,6 +85,6 @@ public class FundamentalApplicationTest() : WhenWorkingWithFundamentalApplicatio
         await using Context context = await ContextFactory.CreateAsync(EnvironmentType.UnitTest);
         Holding holding = context.Holdings.Include(h => h.Security).FirstOrDefault(x => x.Security == Application.SecurityInFocus && x.Date == TestDataRepository.LastQuoteDate);
         Assert.IsNotNull(holding);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holding, TestDataRepository.LastQuoteDate, TestDataRepository.ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holding, TestDataRepository.LastQuoteDate, TestDataRepository.ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
     }
 }

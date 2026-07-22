@@ -18,7 +18,7 @@ public class DateSummaryCalculator : IDateSummaryCalculator {
 
     public IList<DateSummary> CalculateDateSummaries() {
         DateSummaries = new List<DateSummary>();
-        foreach(Holding holding in Holdings.Where(x => Math.Abs(x.NominalBalance) > 0.001)) {
+        foreach(Holding holding in Holdings.Where(x => Math.Abs(x.NominalBalance) > Constants.ZeroLimit)) {
             DateSummary summary = DateSummaries.FirstOrDefault(x => x.Date == holding.Date);
             if (summary == null) {
                 summary = new DateSummary() { Date = holding.Date };

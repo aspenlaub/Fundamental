@@ -5,11 +5,12 @@ using Aspenlaub.Net.GitHub.CSharp.Fundamental.Calculation;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
+using Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Core;
+namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Test.Calculation;
 
 [TestClass]
 public class HoldingCalculatorTest {
@@ -74,7 +75,7 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, InitialBuysDate, [TestDataRepository.BondId]))
                                   .CalculateHoldings();
         Assert.HasCount(1, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
     }
 
     [TestMethod]
@@ -84,7 +85,7 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, QuoteAndPartialSellDate, [TestDataRepository.ShareId]))
                                   .CalculateHoldings();
         Assert.HasCount(1, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
     }
 
     [TestMethod]
@@ -94,7 +95,7 @@ public class HoldingCalculatorTest {
                                   .WithTransactions([.. TransactionsInPeriod(LowDate, QuoteAndPartialSellDate, [TestDataRepository.ShareId]).Reverse()])
                                   .CalculateHoldings();
         Assert.HasCount(1, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
     }
 
     [TestMethod]
@@ -104,8 +105,8 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, QuoteOnlyDate, [TestDataRepository.BondId]))
                                   .CalculateHoldings();
         Assert.HasCount(2, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
     }
 
     [TestMethod]
@@ -115,8 +116,8 @@ public class HoldingCalculatorTest {
                                   .WithTransactions([.. TransactionsInPeriod(LowDate, QuoteOnlyDate, [TestDataRepository.BondId]).Reverse()])
                                   .CalculateHoldings();
         Assert.HasCount(2, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
     }
 
     [TestMethod]
@@ -126,8 +127,8 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, QuoteOnlyDate, [TestDataRepository.BondId]))
                                   .CalculateHoldings();
         Assert.HasCount(2, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
     }
 
     [TestMethod]
@@ -137,8 +138,8 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, QuoteAndPartialSellDate, []))
                                   .CalculateHoldings();
         Assert.HasCount(2, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
     }
 
     [TestMethod]
@@ -148,8 +149,8 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, QuoteAndPartialSellDate, []))
                                   .CalculateHoldings();
         Assert.HasCount(2, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
     }
 
     [TestMethod]
@@ -159,9 +160,9 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, LastQuoteDate, [TestDataRepository.BondId]))
                                   .CalculateHoldings();
         Assert.HasCount(3, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[2], LastQuoteDate, BondId, 0, 0, 0, 11.71, 240.7, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, BondId, 2070, 2070, 2070, 4.27, 0, 0, 0));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[2], LastQuoteDate, BondId, 0, 0, 0, 11.71, 240.7, 0, 0));
     }
 
     [TestMethod]
@@ -171,9 +172,9 @@ public class HoldingCalculatorTest {
                                   .WithTransactions(TransactionsInPeriod(LowDate, LastQuoteDate, [TestDataRepository.ShareId]))
                                   .CalculateHoldings();
         Assert.HasCount(3, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, ShareId, 7, 1432.9, 1531.81, 67.4, 13.62, 0, 98.91));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[2], LastQuoteDate, ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, ShareId, 7, 1432.9, 1531.81, 67.4, 13.62, 0, 98.91));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[2], LastQuoteDate, ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
     }
 
     [TestMethod]
@@ -183,9 +184,9 @@ public class HoldingCalculatorTest {
                                   .WithTransactions([.. TransactionsInPeriod(LowDate, LastQuoteDate, [TestDataRepository.ShareId]).Reverse()])
                                   .CalculateHoldings();
         Assert.HasCount(3, holdings);
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, ShareId, 7, 1432.9, 1531.81, 67.4, 13.62, 0, 98.91));
-        Assert.IsTrue(Helper.IsHoldingEqualTo(holdings[2], LastQuoteDate, ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[0], QuoteAndPartialSellDate, ShareId, 7, 1432.9, 1463.77, 67.4, 13.62, 0, 30.87));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[1], QuoteOnlyDate, ShareId, 7, 1432.9, 1531.81, 67.4, 13.62, 0, 98.91));
+        Assert.IsTrue(TestHelper.IsHoldingEqualTo(holdings[2], LastQuoteDate, ShareId, 70, 1502.9, 1670.2, 67.4, 504.32, 0, 167.30));
     }
 
     protected IList<Quote> QuotesInPeriod(DateTime fromDate, DateTime toDate) {
