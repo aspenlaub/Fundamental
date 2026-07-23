@@ -76,8 +76,7 @@ public class HoldingCalculator : IHoldingCalculator {
                 var precedingHoldings = Holdings.Where(x => x.Security == quote.Security && x.Date < quote.Date).ToList();
                 if (precedingHoldings.Count == 0) { return null; }
 
-                var notEmptyHoldings = precedingHoldings.Where(x => x.NominalBalance > Constants.ZeroLimit).ToList();
-                date = notEmptyHoldings.Count != 0 ? notEmptyHoldings.Max(x => x.Date) : precedingHoldings.Max(x => x.Date);
+                date = precedingHoldings.Max(x => x.Date);
             }
                 break;
             case HoldingForQuoteModes.Same : {
