@@ -46,7 +46,7 @@ public class HoldingCalculator : IHoldingCalculator {
 
             DateTime maxDateWithQuote = securityQuotes.Max(x => x.Date);
             var higherDates = quotes.Select(x => x.Date).Where(x => x > maxDateWithQuote).ToList();
-            if (MaxDateAcrossAllQuotes.Year >= 1980) {
+            if (MaxDateAcrossAllQuotes.Year >= 1980 && maxDateWithQuote != MaxDateAcrossAllQuotes) {
                 higherDates.Add(MaxDateAcrossAllQuotes);
             }
             if (higherDates.Count == 0) { continue; }
