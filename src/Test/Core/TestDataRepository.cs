@@ -14,6 +14,7 @@ public class TestDataRepository {
     public static readonly DateTime NoHoldingsDate = new(1997, 6, 2), InitialBuysDate = new(1997, 7, 24), QuoteAndPartialSellDate = new(1997, 9, 1);
     public static readonly DateTime QuoteOnlyDate = new(1997, 12, 3), CouponAndDividendDate = new(1997, 12, 31), SellBondDate = new(1998, 1, 24);
     public static readonly DateTime StockSplitDate = new(1998, 2, 7), LastQuoteDate = new(1998, 4, 1), HighDate = new(2040, 7, 24);
+    public static readonly DateTime ADateAfterLastQuoteDate = new(2026, 7, 23);
 
     public ObservableCollection<Security> Securities { get; }
     public ObservableCollection<Quote> Quotes { get; }

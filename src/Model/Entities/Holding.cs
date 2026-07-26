@@ -24,4 +24,8 @@ public class Holding : IGuid {
     public double RealizedProfitInEuro { get; set; }
     public double UnrealizedLossInEuro { get; set; }
     public double UnrealizedProfitInEuro { get; set; }
+
+    public override string ToString() {
+        return $"{Security.SecurityId};{Date};{NominalBalance}";
+    }
 }

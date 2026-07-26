@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Entities;
 
@@ -8,5 +9,6 @@ namespace Aspenlaub.Net.GitHub.CSharp.Fundamental.Model.Interfaces;
 public interface IHoldingCalculator {
     IHoldingCalculator WithTransactions(IList<Transaction> transactions);
     IHoldingCalculator WithQuotes(IList<Quote> quotes);
+    IHoldingCalculator WithMaxDateAcrossAllQuotes(DateTime maxDateAcrossAllQuotes);
     IList<Holding> CalculateHoldings();
 }

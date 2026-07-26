@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,13 @@ public class Rebooker(EnvironmentType environmentType, IContextFactory contextFa
             await using Context rebookContext = await ContextFactory.CreateAsync(EnvironmentType);
             var transactions = rebookContext.Transactions.Where(t => t.Security.SecurityId == securityId).Include(t => t.Security).ToList();
             var quotes = rebookContext.Quotes.Where(q => q.Security.SecurityId == securityId).Include(q => q.Security).ToList();
-            var holdings = new HoldingCalculator().WithQuotes(quotes).WithTransactions(transactions).CalculateHoldings().ToList();
+            DateTime maxDateAcrossAllQuotes = rebookContext.Quotes.Select(q => q.Date).Max();
+            var holdings = new HoldingCalculator()
+                .WithQuotes(quotes)
+                .WithTransactions(transactions)
+                .WithMaxDateAcrossAllQuotes(maxDateAcrossAllQuotes)
+                .CalculateHoldings()
+                .ToList();
             rebookContext.Holdings.RemoveRange(rebookContext.Holdings.Where(h => h.Security.SecurityId == securityId));
             rebookContext.Holdings.AddRange(holdings);
             rebookContext.SaveChanges();

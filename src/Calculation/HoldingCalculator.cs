@@ -10,6 +10,7 @@ public class HoldingCalculator : IHoldingCalculator {
     protected List<Transaction> Transactions = [];
     protected List<Quote> Quotes = [];
     protected IList<Holding> Holdings;
+    protected DateTime MaxDateAcrossAllQuotes = DateTime.MinValue;
 
     public IHoldingCalculator WithTransactions(IList<Transaction> transactions) {
         Transactions.AddRange(transactions);
@@ -21,13 +22,39 @@ public class HoldingCalculator : IHoldingCalculator {
         return this;
     }
 
+    public IHoldingCalculator WithMaxDateAcrossAllQuotes(DateTime maxDateAcrossAllQuotes) {
+        MaxDateAcrossAllQuotes = maxDateAcrossAllQuotes;
+        return this;
+    }
+
     public IList<Holding> CalculateHoldings() {
         Holdings = new List<Holding>();
-        foreach(Quote quote in Quotes) {
+        List<Quote> quotes = [.. Quotes ];
+        AddZeroQuotes(quotes);
+        foreach(Quote quote in quotes) {
             UpdateHoldingsWithQuote(quote);
         }
         SortHoldings();
         return Holdings;
+    }
+
+    private void AddZeroQuotes(List<Quote> quotes) {
+        var securityGuids = quotes.Where(x => x.Security != null).Select(x => x.Security.Guid).Distinct().ToList();
+        foreach (string securityGuid in securityGuids) {
+            var securityQuotes = quotes.Where(x => x.Security != null && x.Security.Guid == securityGuid).ToList();
+            if (securityQuotes.Count == 0) { continue; }
+
+            DateTime maxDateWithQuote = securityQuotes.Max(x => x.Date);
+            var higherDates = quotes.Select(x => x.Date).Where(x => x > maxDateWithQuote).ToList();
+            if (MaxDateAcrossAllQuotes.Year >= 1980) {
+                higherDates.Add(MaxDateAcrossAllQuotes);
+            }
+            if (higherDates.Count == 0) { continue; }
+
+            DateTime higherDate = higherDates.Min();
+            var quote = new Quote { Security = securityQuotes.First().Security, Date = higherDate, PriceInEuro = 0 };
+            quotes.Add(quote);
+        }
     }
 
     protected void SortHoldings() {
