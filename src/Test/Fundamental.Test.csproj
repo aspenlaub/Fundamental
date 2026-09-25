@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.9.0" />
-    <PackageReference Include="Seoa" Version="2.0.2607.982" />
+    <PackageReference Include="Seoa" Version="2.0.2620.841" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fundamental.csproj" />
