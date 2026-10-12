@@ -35,7 +35,6 @@ public partial class FundamentalWindow {
     public bool ReadyToUse { get; private set; }
     private readonly ISimpleLogger _SimpleLogger;
     private readonly IMethodNamesFromStackFramesExtractor _MethodNamesFromStackFramesExtractor;
-    private readonly BackgroundWorker _BackgroundWorker = new BackgroundWorker();
     private int _SeenLogMessages ;
 
     public FundamentalWindow() : this(Context.DefaultEnvironmentType) { }
@@ -60,8 +59,6 @@ public partial class FundamentalWindow {
         RelativeSummaryChart.Application = _FundamentalApplication;
         RelativeSummaryChart.UniqueChartNumber = (uint)Charts.RelativeSummary;
         RelativeSummaryChart.Title = Properties.Resources.RelativeSummaryChartTitle;
-        _BackgroundWorker.DoWork += DoBackgroundWork;
-        _BackgroundWorker.RunWorkerCompleted += OnRunWorkerCompleted;
     }
 
     private async void Window_LoadedAsync(object sender, RoutedEventArgs e) {
@@ -114,16 +111,17 @@ public partial class FundamentalWindow {
         _FundamentalViewSources.HoldingPerDateViewSource.View.Refresh();
     }
 
-    private void DateSummaryDataGrid_CurrentCellChanged(object sender, EventArgs e) {
+    private async void DateSummaryDataGrid_CurrentCellChanged(object sender, EventArgs e) {
         var dateSummary = DateSummaryDataGrid.CurrentCell.Item as DateSummary;
         if (dateSummary == null) { return; }
 
         FocusOnDate(dateSummary.Date);
-        if (_BackgroundWorker.IsBusy) {
-            return;
-        }
 
-        _BackgroundWorker.RunWorkerAsync();
+        await Task.Run(async () => {
+            return await CalculateScenariosAsync();
+        }).ContinueWith(t => {
+            LogScenariosResult(t.Result);
+        }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void HoldingPerDateViewSource_Filter(object sender, FilterEventArgs e) {
@@ -317,12 +315,12 @@ public partial class FundamentalWindow {
         e.Accepted = true;
     }
 
-    private async void DoBackgroundWork(object sender, DoWorkEventArgs e) {
-        e.Result = await _FundamentalApplication.CalculateScenariosAsync();
+    private async Task<IList<string>> CalculateScenariosAsync() {
+        return await _FundamentalApplication.CalculateScenariosAsync();
     }
 
-    private void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-        _FundamentalApplication.LogScenariosResult(e.Result as IList<string>);
+    private void LogScenariosResult(IList<string> messages) {
+        _FundamentalApplication.LogScenariosResult(messages);
         UpdateLogTabHeader();
     }
 
