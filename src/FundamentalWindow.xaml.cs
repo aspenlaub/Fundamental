@@ -119,8 +119,8 @@ public partial class FundamentalWindow {
 
         await Task.Run(async () => {
             return await CalculateScenariosAsync();
-        }).ContinueWith(t => {
-            LogScenariosResult(t.Result);
+        }).ContinueWith(async t => {
+            LogScenariosResult(await t);
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
