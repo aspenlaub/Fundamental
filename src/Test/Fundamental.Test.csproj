@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net11.0-windows</TargetFramework>
     <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
-    <AssetTargetFallback>net10.0</AssetTargetFallback>
+    <AssetTargetFallback>net11.0</AssetTargetFallback>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</RootNamespace>
     <AssemblyName>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyName>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.9.0" />
-    <PackageReference Include="Seoa" Version="2.0.2666.1089" />
+    <PackageReference Include="Seoa" Version="2.0.2666.1373" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fundamental.csproj" />
