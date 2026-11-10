@@ -28,7 +28,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
-    <PackageReference Include="Vishizhukel" Version="2.0.2653.688" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
+    <PackageReference Include="Vishizhukel" Version="2.0.2666.1135" />
   </ItemGroup>
 </Project>
