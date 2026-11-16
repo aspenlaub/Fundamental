@@ -4,7 +4,6 @@
     <TargetFramework>net11.0-windows</TargetFramework>
     <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
     <AssetTargetFallback>net11.0</AssetTargetFallback>
-    <LangVersion>latest</LangVersion>
     <RootNamespace>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</RootNamespace>
     <AssemblyName>Aspenlaub.Net.GitHub.CSharp.Fundamental.Test</AssemblyName>
     <GenerateBuildInfoConfigFile>false</GenerateBuildInfoConfigFile>
